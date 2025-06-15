@@ -10,6 +10,8 @@ interface SoundEffect {
   duration: number;
 }
 
+// Note: These audio files don't exist in the current environment
+// In a real deployment, you would add these MP3 files to the public/sounds folder
 const SOUND_EFFECTS: Record<SoundMode, SoundEffect[]> = {
   random: [
     { id: 'bruh', name: 'Bruh', url: '/sounds/bruh.mp3', duration: 1.2 },
@@ -56,6 +58,7 @@ export const useSoundEffects = () => {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [lastPlayedSound, setLastPlayedSound] = useState<SoundEffect | null>(null);
 
   const toggleSound = useCallback(() => {
     const newState = !soundEnabled;
@@ -73,7 +76,7 @@ export const useSoundEffects = () => {
   }, []);
 
   const playSound = useCallback(async (mode: SoundMode, surpriseMe: boolean = false) => {
-    if (!soundEnabled) return;
+    if (!soundEnabled) return null;
 
     try {
       const modeEffects = surpriseMe 
@@ -94,12 +97,19 @@ export const useSoundEffects = () => {
       audioRef.current = audio;
 
       setIsPlaying(true);
+      setLastPlayedSound(randomEffect);
 
       // Handle audio events
       audio.onended = () => setIsPlaying(false);
       audio.onerror = () => {
-        console.warn(`Failed to play sound: ${randomEffect.name}`);
+        console.warn(`Audio file not found: ${randomEffect.name} (${randomEffect.url})`);
+        console.log('💡 To hear sounds, add MP3 files to public/sounds/ folder');
         setIsPlaying(false);
+        
+        // Show visual feedback instead of sound
+        if ('vibrate' in navigator) {
+          navigator.vibrate([100, 50, 100]);
+        }
       };
 
       await audio.play();
@@ -111,18 +121,28 @@ export const useSoundEffects = () => {
 
       return randomEffect;
     } catch (error) {
-      console.warn('Sound playback failed:', error);
+      console.warn('Sound playback failed - audio files not available in demo environment');
+      console.log('💡 In production, add sound files to public/sounds/ folder');
       setIsPlaying(false);
+      
+      // Provide visual feedback as fallback
+      if ('vibrate' in navigator) {
+        navigator.vibrate([100]);
+      }
+      
+      return null;
     }
   }, [soundEnabled, volume]);
 
   const replayLastSound = useCallback(() => {
-    if (audioRef.current && soundEnabled) {
+    if (audioRef.current && soundEnabled && lastPlayedSound) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(console.warn);
+      audioRef.current.play().catch(() => {
+        console.warn('Replay failed - audio files not available');
+      });
       setIsPlaying(true);
     }
-  }, [soundEnabled]);
+  }, [soundEnabled, lastPlayedSound]);
 
   const getSoundEffects = useCallback((mode: SoundMode) => {
     return SOUND_EFFECTS[mode] || SOUND_EFFECTS.random;
@@ -132,6 +152,7 @@ export const useSoundEffects = () => {
     soundEnabled,
     volume,
     isPlaying,
+    lastPlayedSound,
     toggleSound,
     setVolumeLevel,
     playSound,
