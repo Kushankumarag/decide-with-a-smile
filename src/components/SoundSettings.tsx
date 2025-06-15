@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { useSoundEffects } from '../hooks/useSoundEffects';
@@ -7,7 +6,7 @@ const SoundSettings = () => {
   const { soundEnabled, volume, toggleSound, setVolumeLevel, playSound } = useSoundEffects();
 
   const testSound = () => {
-    playSound('random', true); // Play a random sound for testing
+    playSound(); // Play a random user sound for testing
   };
 
   return (
@@ -66,7 +65,7 @@ const SoundSettings = () => {
           <div className="text-center">
             <p className="text-xs text-purple-600 flex items-center justify-center gap-1">
               <Sparkles className="h-3 w-3" />
-              Upload your sounds to /public/sounds/
+              Upload mp3 files to <b>/public/sounds/</b> and update <b>filelist.json</b>
               <Sparkles className="h-3 w-3" />
             </p>
           </div>
@@ -77,7 +76,7 @@ const SoundSettings = () => {
       <div className="px-4">
         <p className="text-xs text-gray-500 text-center">
           {soundEnabled 
-            ? '🎵 Upload MP3 files to public/sounds/ folder to hear them!'
+            ? '🎵 Add your own MP3 files to public/sounds/ and edit filelist.json to include them!'
             : '🔇 Enable sounds for meme audio effects!'
           }
         </p>

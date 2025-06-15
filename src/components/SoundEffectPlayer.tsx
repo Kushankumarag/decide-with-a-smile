@@ -1,16 +1,15 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Volume2, VolumeX, RotateCcw } from 'lucide-react';
-import { useSoundEffects, SoundMode } from '../hooks/useSoundEffects';
+import { useSoundEffects } from '../hooks/useSoundEffects';
 
 interface SoundEffectPlayerProps {
-  mode: SoundMode;
+  mode?: string;
   autoPlay?: boolean;
   onSoundPlayed?: (soundName: string) => void;
 }
 
-const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffectPlayerProps) => {
+const SoundEffectPlayer = ({ autoPlay = true, onSoundPlayed }: SoundEffectPlayerProps) => {
   const { soundEnabled, isPlaying, playSound, replayLastSound, lastPlayedSound } = useSoundEffects();
   const [soundWaves, setSoundWaves] = useState(false);
   const [attemptedPlay, setAttemptedPlay] = useState(false);
@@ -18,28 +17,25 @@ const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffect
   useEffect(() => {
     if (autoPlay && soundEnabled && !attemptedPlay) {
       const timer = setTimeout(async () => {
-        const sound = await playSound(mode);
+        const sound = await playSound();
         setAttemptedPlay(true);
         
         if (sound) {
-          onSoundPlayed?.(sound.name);
-          
-          // Trigger sound wave animation
-          setSoundWaves(true);
-          setTimeout(() => setSoundWaves(false), sound.duration * 1000);
-        }
-      }, 500); // Small delay after result appears
+          onSoundPlayed?.(sound);
 
+          // Trigger sound wave animation for 1.5s as a default for custom files
+          setSoundWaves(true);
+          setTimeout(() => setSoundWaves(false), 1500);
+        }
+      }, 500);
       return () => clearTimeout(timer);
     }
-  }, [mode, autoPlay, soundEnabled, playSound, onSoundPlayed, attemptedPlay]);
+  }, [autoPlay, soundEnabled, playSound, onSoundPlayed, attemptedPlay]);
 
   const handleReplaySound = () => {
     replayLastSound();
     setSoundWaves(true);
-    if (lastPlayedSound) {
-      setTimeout(() => setSoundWaves(false), lastPlayedSound.duration * 1000);
-    }
+    setTimeout(() => setSoundWaves(false), 1500);
   };
 
   if (!soundEnabled) {
@@ -62,7 +58,6 @@ const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffect
           <div className={`w-1 bg-purple-500 rounded-full ${soundWaves ? 'animate-pulse h-5' : 'h-2'}`} style={{ animationDelay: '300ms' }}></div>
         </div>
 
-        {/* Replay button */}
         <Button
           variant="ghost"
           size="sm"
@@ -84,10 +79,9 @@ const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffect
         </Button>
       </div>
 
-      {/* Last played sound name */}
       {lastPlayedSound && (
         <span className="text-xs text-purple-600 font-medium">
-          🎵 "{lastPlayedSound.name}"
+          🎵 "{lastPlayedSound}"
         </span>
       )}
     </div>
