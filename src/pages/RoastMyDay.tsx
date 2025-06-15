@@ -36,7 +36,7 @@ export default function RoastMyDay() {
     setLoading(true);
     try {
       const roastText = await browserRoast(input);
-      setRoast(`${roastText} [About: ${input}]`);
+      setRoast(roastText); // Do NOT append [About: input] anymore
       setShowInputError(false);
     } catch (err: any) {
       setApiError(

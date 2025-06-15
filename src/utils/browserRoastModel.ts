@@ -1,4 +1,3 @@
-
 import { pipeline, env } from "@huggingface/transformers";
 
 // Always use the latest models from Hugging Face Hub, not browser cache
@@ -25,7 +24,8 @@ export async function browserRoast(input: string): Promise<string> {
   const generator = await getTextGenerator();
 
   const result = await generator(
-    `You're an internet comedian roasting people for fun. Craft a clever, light-hearted roast for: "${input}". Keep it under 3 sentences.`,
+    // Prompt as if a dad is roasting you, keep it gentle and classic "dad joke" style
+    `You're a lovable, witty dad. Roast your kid in a way only a dad would: lovable, pun-filled, and gently embarrassing. Here's what your kid did: "${input}". Give a light-hearted dad-style roast, maximum 2 sentences.`,
     {
       max_new_tokens: 80,
       temperature: 0.95,
@@ -41,4 +41,3 @@ export async function browserRoast(input: string): Promise<string> {
   }
   throw new Error("No roast generated locally.");
 }
-
