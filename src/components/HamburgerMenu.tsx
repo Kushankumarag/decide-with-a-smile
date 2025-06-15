@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -9,6 +10,7 @@ import {
 } from '@/components/ui/drawer';
 import { Menu, X, Brain, Shuffle, Sparkles, BookOpen, Users } from 'lucide-react';
 import SoundSettings from './SoundSettings';
+import { useNavigate } from "react-router-dom";
 
 interface HamburgerMenuProps {
   onFeatureSelect: (feature: string) => void;
@@ -16,6 +18,7 @@ interface HamburgerMenuProps {
 
 const HamburgerMenu = ({ onFeatureSelect }: HamburgerMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const menuItems = [
     {
@@ -24,40 +27,45 @@ const HamburgerMenu = ({ onFeatureSelect }: HamburgerMenuProps) => {
       description: 'Get help with your tough choices',
       icon: Brain,
       emoji: '🧠',
-      isDefault: true
+      isDefault: true,
+      onClick: () => onFeatureSelect('decision-maker')
     },
     {
       id: 'would-you-rather',
       title: 'Would You Rather?',
       description: 'Fun dilemmas to swipe through',
       icon: Shuffle,
-      emoji: '🤔'
+      emoji: '🤔',
+      onClick: () => onFeatureSelect('would-you-rather')
     },
     {
       id: 'daily-horoscope',
       title: 'Daily Vibe Horoscope',
       description: 'Get your decision-making energy reading',
       icon: Sparkles,
-      emoji: '🔮'
+      emoji: '🔮',
+      onClick: () => navigate("/horoscope")
     },
     {
       id: 'roast-my-day',
       title: 'Roast My Day',
       description: 'Let AI roast your daily decisions',
       icon: BookOpen,
-      emoji: '📓'
+      emoji: '📓',
+      onClick: () => navigate("/roast")
     },
     {
       id: 'personality-quiz',
       title: 'Decision Personality Quiz',
       description: 'Discover your decision-making style',
       icon: Users,
-      emoji: '🎭'
+      emoji: '🎭',
+      onClick: () => navigate("/quiz")
     }
   ];
 
-  const handleItemClick = (itemId: string) => {
-    onFeatureSelect(itemId);
+  const handleItemClick = (itemId: string, onClick: () => void) => {
+    onClick();
     setIsOpen(false);
   };
 
@@ -100,7 +108,7 @@ const HamburgerMenu = ({ onFeatureSelect }: HamburgerMenuProps) => {
                   className={`w-full p-4 h-auto text-left justify-start hover:scale-105 transition-transform ${
                     item.isDefault ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200' : ''
                   }`}
-                  onClick={() => handleItemClick(item.id)}
+                  onClick={() => handleItemClick(item.id, item.onClick)}
                 >
                   <div className="flex items-center gap-4 w-full">
                     <div className="text-2xl">{item.emoji}</div>
