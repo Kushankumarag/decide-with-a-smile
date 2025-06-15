@@ -19,20 +19,33 @@ export async function getTextGenerator() {
   return generatorPromise;
 }
 
-// Given a prompt, returns generated text (keeps to about 80 tokens for speed and relevance)
+// Promise helper for timeout
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error("Roast took too long. Please try again!")), ms)
+    ),
+  ]);
+}
+
+// Given a prompt, returns generated text (keeps to about 48 tokens for speed and relevance)
 export async function browserRoast(input: string): Promise<string> {
   const generator = await getTextGenerator();
 
-  const result = await generator(
-    // Prompt as if a dad is roasting you, keep it gentle and classic "dad joke" style
-    `You're a lovable, witty dad. Roast your kid in a way only a dad would: lovable, pun-filled, and gently embarrassing. Here's what your kid did: "${input}". Give a light-hearted dad-style roast, maximum 2 sentences.`,
-    {
-      max_new_tokens: 80,
-      temperature: 0.95,
-      top_p: 0.85,
-      do_sample: true,
-      return_full_text: false,
-    }
+  const result = await withTimeout(
+    generator(
+      // Prompt as if a dad is roasting you, keep it gentle and classic "dad joke" style
+      `You're a lovable, witty dad. Roast your kid in a way only a dad would: lovable, pun-filled, and gently embarrassing. Here's what your kid did: "${input}". Give a light-hearted dad-style roast, maximum 2 sentences.`,
+      {
+        max_new_tokens: 48, // Shorter output for speed
+        temperature: 0.95,
+        top_p: 0.85,
+        do_sample: true,
+        return_full_text: false,
+      }
+    ),
+    9000 // 9 seconds timeout
   );
 
   // Result is an array with { generated_text: ... }
