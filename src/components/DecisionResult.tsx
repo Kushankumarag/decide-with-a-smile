@@ -26,7 +26,7 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
   const [isRevealing, setIsRevealing] = useState(true);
   const [explanation, setExplanation] = useState<string>('');
   const [soundTriggered, setSoundTriggered] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(true);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   // Map decision modes to sound modes
   const getSoundMode = (): SoundMode => {
@@ -359,10 +359,18 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
           </div>
         </Card>
 
-        <div className="mt-6 md:mt-8 text-center">
+        <div className="mt-6 md:mt-8 text-center flex flex-col items-center">
           <p className="text-xs md:text-sm text-gray-500 px-4">
             Remember: This is just for fun! Trust your gut too, bestie! 😊✨
           </p>
+          <button
+            className="mt-3 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-sm font-semibold hover:bg-purple-100 hover:text-purple-900 transition-all"
+            onClick={() => setShowFeedback(true)}
+            aria-label="Give feedback"
+            type="button"
+          >
+            Give us a feedback 💬
+          </button>
         </div>
       </div>
       {showFeedback && (
