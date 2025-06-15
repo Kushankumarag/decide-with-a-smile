@@ -3,9 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, Lightbulb } from 'lucide-react';
 import MoodSelector from './MoodSelector';
-import { Mood } from '../types';
+import PersonalityQuiz from './PersonalityQuiz';
+import ChaosSlider from './ChaosSlider';
+import DailyDilemma from './DailyDilemma';
+import SpinWheel from './SpinWheel';
+import { Mood, DailyDilemma as DailyDilemmaType } from '../types';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { generateAIOptions } from '../utils/aiOptionsGenerator';
 
 interface DecisionInputProps {
   onModeSelect: (mode: string, options: string[], context: string, mood?: Mood) => void;
@@ -21,6 +27,13 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
   const [context, setContext] = useState(initialContext || '');
   const [selectedMood, setSelectedMood] = useState<Mood | undefined>(initialMood);
   const [showMoodSelector, setShowMoodSelector] = useState(true);
+  const [showPersonalityQuiz, setShowPersonalityQuiz] = useState(false);
+  const [showSpinWheel, setShowSpinWheel] = useState(false);
+  const [showDailyDilemma, setShowDailyDilemma] = useState(true);
+  const [pressureMode, setPressureMode] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(10);
+
+  const { profile, updateArchetype, updateChaosLevel } = useUserProfile();
 
   useEffect(() => {
     if (initialOptions && initialOptions.length > 0) {
@@ -29,7 +42,22 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
     if (initialContext) {
       setContext(initialContext);
     }
-  }, [initialOptions, initialContext]);
+    
+    // Show personality quiz if not completed
+    if (!profile.completedQuiz) {
+      setShowPersonalityQuiz(true);
+    }
+  }, [initialOptions, initialContext, profile.completedQuiz]);
+
+  // Pressure mode timer
+  useEffect(() => {
+    if (pressureMode && timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (pressureMode && timeLeft === 0) {
+      handleModeSelect('random'); // Auto-select random mode
+    }
+  }, [pressureMode, timeLeft]);
 
   const addOption = () => {
     if (options.length < 6) {
@@ -52,8 +80,14 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
   const handleModeSelect = (mode: string) => {
     const validOptions = options.filter(option => option.trim() !== '');
     if (validOptions.length >= 2) {
-      // Chaos mode effect - shuffle options randomly
-      if (chaosMode) {
+      // Show spin wheel for random mode if not in pressure mode
+      if (mode === 'random' && !pressureMode) {
+        setShowSpinWheel(true);
+        return;
+      }
+
+      // Apply chaos mode effects
+      if (chaosMode || profile.chaosLevel > 75) {
         const shuffled = [...validOptions].sort(() => Math.random() - 0.5);
         onModeSelect(mode, shuffled, context, selectedMood);
       } else {
@@ -62,12 +96,88 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
     }
   };
 
+  const handleSpinWheelResult = (selectedOption: string) => {
+    setShowSpinWheel(false);
+    // Simulate random mode selection with the spun result
+    onModeSelect('random', [selectedOption], context, selectedMood);
+  };
+
+  const handleAddAIOptions = () => {
+    const aiSuggestions = generateAIOptions(context, options.filter(o => o.trim()));
+    const newOptions = [...options];
+    
+    aiSuggestions.forEach(suggestion => {
+      if (newOptions.length < 6) {
+        const emptyIndex = newOptions.findIndex(opt => opt.trim() === '');
+        if (emptyIndex !== -1) {
+          newOptions[emptyIndex] = suggestion;
+        } else {
+          newOptions.push(suggestion);
+        }
+      }
+    });
+    
+    setOptions(newOptions);
+  };
+
+  const handleDailyDilemmaChallenge = (dilemma: DailyDilemmaType) => {
+    setOptions(dilemma.options);
+    setContext(dilemma.question);
+    setShowDailyDilemma(false);
+  };
+
+  const handleSurpriseMe = () => {
+    const surpriseOptions = [
+      "Do a little dance 💃",
+      "Text your mom 📱💜",
+      "Eat something with your non-dominant hand 🍴",
+      "Google something random 🔍❓",
+      "Make a weird face in the mirror 😵‍💫"
+    ];
+    const randomOption = surpriseOptions[Math.floor(Math.random() * surpriseOptions.length)];
+    onModeSelect('surprise', [randomOption], "The universe has spoken through chaos!", selectedMood);
+  };
+
+  const getMascotForArchetype = () => {
+    return profile.mascot || '✨';
+  };
+
+  const getArchetypeAdvice = () => {
+    const advice = {
+      'vibe-chaser': "Trust your gut, bestie! ✨",
+      'spreadsheet-queen': "Have you considered making a pros/cons list? 📊",
+      'procrastination-warrior': "No rush, take your time... or don't 🛋️",
+      'chaos-agent': "Why not flip a coin and add some chaos? 🌪️",
+      'overthinking-genius': "I see those gears turning! 🧠⚙️"
+    };
+    return profile.archetype ? advice[profile.archetype] : "You've got this! 💪";
+  };
+
   const bgClass = chaosMode 
     ? "min-h-screen bg-gradient-to-br from-red-100 via-yellow-100 to-pink-100" 
     : "min-h-screen bg-gradient-to-br from-purple-50 to-pink-50";
 
   const validOptions = options.filter(option => option.trim() !== '');
   const canProceed = validOptions.length >= 2;
+
+  if (showPersonalityQuiz) {
+    return (
+      <PersonalityQuiz
+        onComplete={updateArchetype}
+        onSkip={() => setShowPersonalityQuiz(false)}
+      />
+    );
+  }
+
+  if (showSpinWheel) {
+    return (
+      <SpinWheel
+        options={validOptions}
+        onResult={handleSpinWheelResult}
+        onSkip={() => setShowSpinWheel(false)}
+      />
+    );
+  }
 
   return (
     <div className={`${bgClass} p-4`}>
@@ -80,6 +190,32 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
           ← Back to Home
         </Button>
 
+        {/* Pressure Mode Timer */}
+        {pressureMode && (
+          <Card className="mb-4 p-4 bg-gradient-to-r from-red-200 to-orange-200 border-2 border-dashed border-red-400 animate-pulse">
+            <div className="text-center">
+              <h3 className="text-lg font-bold text-red-800 mb-2">
+                ⏰ PRESSURE MODE ACTIVATED!
+              </h3>
+              <p className="text-red-700 mb-2">
+                Bestie... the clock's ticking 🫠
+              </p>
+              <div className="text-3xl font-bold text-red-800">
+                {timeLeft}s
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Daily Dilemma */}
+        {showDailyDilemma && (
+          <DailyDilemma
+            onTakeChallenge={handleDailyDilemmaChallenge}
+            onDismiss={() => setShowDailyDilemma(false)}
+          />
+        )}
+
+        {/* Chaos Mode Alert */}
         {chaosMode && (
           <div className="mb-4 p-3 bg-gradient-to-r from-red-200 to-orange-200 rounded-lg border-2 border-dashed border-red-400 animate-wiggle">
             <p className="text-center font-bold text-red-800">
@@ -88,6 +224,22 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
           </div>
         )}
 
+        {/* Mascot Advice */}
+        {profile.archetype && (
+          <Card className="mb-4 p-3 bg-gradient-to-r from-purple-100 to-pink-100">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{getMascotForArchetype()}</span>
+              <div>
+                <p className="text-sm font-medium text-purple-700">
+                  Your {profile.archetype.replace('-', ' ')} vibes say:
+                </p>
+                <p className="text-sm text-purple-600">{getArchetypeAdvice()}</p>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Mood Selector */}
         {showMoodSelector && (
           <MoodSelector
             selectedMood={selectedMood}
@@ -95,6 +247,13 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
             onSkip={() => setShowMoodSelector(false)}
           />
         )}
+
+        {/* Chaos Level Slider */}
+        <ChaosSlider
+          value={profile.chaosLevel}
+          onChange={updateChaosLevel}
+          className="mb-6"
+        />
 
         <Card className="p-4 md:p-8 shadow-xl">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -120,9 +279,22 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
 
           {/* Options Input */}
           <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
-            <label className="block text-sm font-medium text-gray-700">
-              Your Options ⚡
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="block text-sm font-medium text-gray-700">
+                Your Options ⚡
+              </label>
+              <Button
+                onClick={handleAddAIOptions}
+                variant="ghost"
+                size="sm"
+                className="text-purple-600 hover:text-purple-800 text-xs"
+                disabled={context.trim() === ''}
+              >
+                <Lightbulb className="w-3 h-3 mr-1" />
+                Add AI Suggestions
+              </Button>
+            </div>
+            
             {options.map((option, index) => (
               <div key={index} className="flex gap-2">
                 <div className="flex-shrink-0 w-6 h-8 md:w-8 md:h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-semibold text-xs md:text-sm">
@@ -157,6 +329,27 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
                 Add Another Option
               </Button>
             )}
+          </div>
+
+          {/* Fun Mode Buttons */}
+          <div className="mb-6 flex gap-2 justify-center flex-wrap">
+            <Button
+              onClick={() => setPressureMode(true)}
+              variant="outline"
+              size="sm"
+              className="border-red-300 text-red-600 hover:bg-red-50 text-xs"
+              disabled={pressureMode || !canProceed}
+            >
+              ⏰ Pressure Mode
+            </Button>
+            <Button
+              onClick={handleSurpriseMe}
+              variant="outline"
+              size="sm"
+              className="border-yellow-300 text-yellow-600 hover:bg-yellow-50 text-xs"
+            >
+              🪄 Surprise Me!
+            </Button>
           </div>
 
           {/* Decision Mode Selection */}

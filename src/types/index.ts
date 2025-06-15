@@ -30,3 +30,25 @@ export interface FriendPoll {
   createdAt: Date;
   isActive: boolean;
 }
+
+export type DecisionArchetype = 
+  | 'vibe-chaser' 
+  | 'spreadsheet-queen' 
+  | 'procrastination-warrior' 
+  | 'chaos-agent' 
+  | 'overthinking-genius';
+
+export interface UserProfile {
+  archetype?: DecisionArchetype;
+  mascot?: string;
+  chaosLevel: number; // 0-100 scale
+  completedQuiz: boolean;
+}
+
+export interface DailyDilemma {
+  id: string;
+  question: string;
+  options: string[];
+  date: string;
+  category: string;
+}
