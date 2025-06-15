@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 
-export type SoundMode = 'random';
+export type SoundMode = 'random' | 'ai' | 'logic' | 'sassy' | 'reverse' | 'party';
 
 export const useSoundEffects = () => {
   const [soundEnabled, setSoundEnabled] = useState(() => {
