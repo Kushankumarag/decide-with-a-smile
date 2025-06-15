@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -8,7 +7,7 @@ import {
   DrawerTitle,
   DrawerClose,
 } from '@/components/ui/drawer';
-import { Menu, X, Brain, Shuffle, Crystal, BookOpen, Users, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Menu, X, Brain, Shuffle, Sparkles, BookOpen, Users, Volume2, VolumeX, Sparkles } from 'lucide-react';
 
 interface HamburgerMenuProps {
   onFeatureSelect: (feature: string) => void;
@@ -38,7 +37,7 @@ const HamburgerMenu = ({ onFeatureSelect }: HamburgerMenuProps) => {
       id: 'daily-horoscope',
       title: 'Daily Vibe Horoscope',
       description: 'Get your decision-making energy reading',
-      icon: Crystal,
+      icon: Sparkles,
       emoji: '🔮'
     },
     {
