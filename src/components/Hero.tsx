@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import HowItWorksModal from './HowItWorksModal';
 import WouldYouRather from './WouldYouRather';
 import HamburgerMenu from './HamburgerMenu';
-import ThemeToggle from './ThemeToggle'; // <-- Add import
 
 interface HeroProps {
   onStartDeciding: () => void;
@@ -70,7 +69,6 @@ const Hero = ({
 
   return (
     <div className={`${bgClass} flex items-center justify-center p-4 relative overflow-hidden`}>
-      <ThemeToggle />
       {/* Hamburger Menu */}
       <HamburgerMenu onFeatureSelect={handleFeatureSelect} />
 
