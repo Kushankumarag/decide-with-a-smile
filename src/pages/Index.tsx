@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import FeatureMenuBar from '@/components/FeatureMenuBar';
+// Removed FeatureMenuBar import
 import Hero from '@/components/Hero';
 import DecisionInput from '@/components/DecisionInput';
 import DecisionResult from '@/components/DecisionResult';
@@ -150,7 +151,7 @@ const Index = () => {
 
   return (
     <>
-      <FeatureMenuBar />
+      {/* FeatureMenuBar removed from here */}
       {renderCurrentState()}
       {newAchievement && (
         <AchievementToast

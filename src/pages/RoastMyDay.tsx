@@ -1,4 +1,5 @@
-import FeatureMenuBar from "@/components/FeatureMenuBar";
+
+// Removed FeatureMenuBar import
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export default function RoastMyDay() {
 
   return (
     <>
-      <FeatureMenuBar />
+      {/* FeatureMenuBar removed from here */}
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-yellow-50 via-pink-50 to-rose-50 p-4">
         <Card className="max-w-lg w-full mx-auto p-6 md:p-10 shadow-xl text-center border-2 border-orange-200 bg-white/70">
           <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">

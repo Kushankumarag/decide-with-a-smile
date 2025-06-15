@@ -1,4 +1,5 @@
-import FeatureMenuBar from "@/components/FeatureMenuBar";
+
+// Removed FeatureMenuBar import
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +39,7 @@ export default function DailyHoroscope() {
 
   return (
     <>
-      <FeatureMenuBar />
+      {/* FeatureMenuBar removed from here */}
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 p-4">
         <Card className="max-w-md w-full mx-auto p-6 md:p-10 shadow-xl text-center border-2 border-purple-200 bg-white/80">
           <h1 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
