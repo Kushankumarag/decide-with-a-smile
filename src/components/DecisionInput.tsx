@@ -12,6 +12,7 @@ import SpinWheel from './SpinWheel';
 import { Mood, DailyDilemma as DailyDilemmaType } from '../types';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { generateAIOptions } from '../utils/aiOptionsGenerator';
+import PartyMode from './PartyMode';
 
 interface DecisionInputProps {
   onModeSelect: (mode: string, options: string[], context: string, mood?: Mood) => void;
@@ -32,6 +33,7 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
   const [showDailyDilemma, setShowDailyDilemma] = useState(true);
   const [pressureMode, setPressureMode] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
+  const [showPartyMode, setShowPartyMode] = useState(false);
 
   const { profile, updateArchetype, updateChaosLevel } = useUserProfile();
 
@@ -89,6 +91,19 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
         return;
       }
 
+      // Handle reverse psychology mode
+      if (mode === 'reverse') {
+        const worstOption = validOptions[validOptions.length - 1]; // Pick the "worst" (last) option
+        onModeSelect('reverse', [worstOption], context, selectedMood);
+        return;
+      }
+
+      // Show party mode
+      if (mode === 'party') {
+        setShowPartyMode(true);
+        return;
+      }
+
       // Apply chaos mode effects
       if (chaosMode || profile.chaosLevel > 75) {
         const shuffled = [...validOptions].sort(() => Math.random() - 0.5);
@@ -142,6 +157,11 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
     onModeSelect('surprise', [randomOption], "The universe has spoken through chaos!", selectedMood);
   };
 
+  const handlePartyModeComplete = (partyOptions: string[], partyContext: string) => {
+    setShowPartyMode(false);
+    onModeSelect('party', partyOptions, partyContext, selectedMood);
+  };
+
   const getMascotForArchetype = () => {
     return profile.mascot || '✨';
   };
@@ -183,6 +203,16 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
           console.log('Spin wheel skipped');
           setShowSpinWheel(false);
         }}
+      />
+    );
+  }
+
+  if (showPartyMode) {
+    return (
+      <PartyMode
+        onComplete={handlePartyModeComplete}
+        onCancel={() => setShowPartyMode(false)}
+        initialContext={context}
       />
     );
   }
@@ -358,6 +388,15 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
             >
               🪄 Surprise Me!
             </Button>
+            <Button
+              onClick={() => handleModeSelect('party')}
+              variant="outline"
+              size="sm"
+              className="border-purple-300 text-purple-600 hover:bg-purple-50 text-xs"
+              disabled={!canProceed}
+            >
+              🎉 Party Mode
+            </Button>
           </div>
 
           {/* Decision Mode Selection */}
@@ -420,6 +459,18 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
                   <div className="text-xl md:text-2xl mb-1 md:mb-2">😂</div>
                   <div className="font-semibold text-xs md:text-sm">Sassy Mode</div>
                   <div className="text-xs opacity-90 hidden md:block">With personality!</div>
+                </div>
+              </Button>
+
+              <Button
+                onClick={() => handleModeSelect('reverse')}
+                disabled={!canProceed}
+                className="h-auto p-3 md:p-4 bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 text-white transition-all duration-300 hover:scale-105"
+              >
+                <div className="text-center">
+                  <div className="text-xl md:text-2xl mb-1 md:mb-2">🙃</div>
+                  <div className="font-semibold text-xs md:text-sm">Reverse Mode</div>
+                  <div className="text-xs opacity-90 hidden md:block">Do the opposite!</div>
                 </div>
               </Button>
             </div>

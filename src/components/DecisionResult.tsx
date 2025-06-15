@@ -137,6 +137,32 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
         ];
         decisionMessage = getMoodInfluencedMessages(sassyMessages[Math.floor(Math.random() * sassyMessages.length)]);
         break;
+
+      case 'reverse':
+        selectedOption = options[0]; // Always pick the first (intended as "worst") option
+        const reverseMessages = [
+          "What if we were wrong... but confidently? 🙃",
+          "Sometimes the worst choice is the best choice! 🤪",
+          "Plot twist: Going against the grain! 🌾",
+          "Reverse psychology activated! This is definitely NOT what you should do... 😉",
+          "Breaking news: We're doing the opposite! 📰🙃"
+        ];
+        decisionMessage = getMoodInfluencedMessages(reverseMessages[Math.floor(Math.random() * reverseMessages.length)]);
+        aiExplanation = "Based on advanced reverse psychology algorithms, this is probably the choice you're trying to avoid... which makes it perfect! 🧠🙃";
+        break;
+
+      case 'party':
+        selectedOption = options[Math.floor(Math.random() * options.length)];
+        const partyMessages = [
+          "The squad has spoken! 🎉👥",
+          "Party mode collective wisdom activated! 🧠✨",
+          "Your friends know what's up! 👯‍♀️",
+          "Group chat energy chose this! 💬🔥",
+          "The people have decided! Democracy wins! 🗳️✨"
+        ];
+        decisionMessage = getMoodInfluencedMessages(partyMessages[Math.floor(Math.random() * partyMessages.length)]);
+        aiExplanation = "Multiple minds came together to suggest this option. The power of friendship and collective decision-making! 👥💪";
+        break;
         
       default:
         selectedOption = options[0];
@@ -159,6 +185,8 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
       case 'ai': return '🤖';
       case 'logic': return '📊';
       case 'sassy': return '😂';
+      case 'reverse': return '🙃';
+      case 'party': return '🎉';
       default: return '✨';
     }
   };
@@ -169,6 +197,8 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
       case 'ai': return 'AI Assistant';
       case 'logic': return 'Logic Mode';
       case 'sassy': return 'Sassy Mode';
+      case 'reverse': return 'Reverse Psychology';
+      case 'party': return 'Party Mode';
       default: return 'Decision';
     }
   };

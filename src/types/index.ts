@@ -52,3 +52,15 @@ export interface DailyDilemma {
   date: string;
   category: string;
 }
+
+export interface PartyModePlayer {
+  name: string;
+  isHost: boolean;
+}
+
+export interface PartyModeSession {
+  players: PartyModePlayer[];
+  currentPlayerIndex: number;
+  suggestedOptions: string[];
+  isActive: boolean;
+}
