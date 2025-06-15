@@ -170,8 +170,8 @@ const Hero = ({
       {/* Modal */}
       <HowItWorksModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
-      {/* Watermark at bottom - always visible */}
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 opacity-70 pointer-events-none select-none z-50">
+      {/* Watermark at bottom right - always visible */}
+      <div className="fixed bottom-2 right-4 text-xs text-gray-400 opacity-70 pointer-events-none select-none z-50">
         created by ~_~
       </div>
     </div>
