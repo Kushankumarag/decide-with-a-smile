@@ -14,20 +14,20 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
   // Fun floating memes that appear randomly
   const floatingMemes = ['🤔', '✨', '🎯', '🎲', '🧠', '💡', '🎪', '🎭'];
   const [currentMemes, setCurrentMemes] = useState([
-    { emoji: '🤔', position: 'top-20 left-10' },
-    { emoji: '✨', position: 'top-32 right-20' },
-    { emoji: '🎯', position: 'bottom-40 left-20' },
-    { emoji: '🎲', position: 'bottom-60 right-10' }
+    { emoji: '🤔', position: 'top-20 left-4 md:left-10' },
+    { emoji: '✨', position: 'top-32 right-4 md:right-20' },
+    { emoji: '🎯', position: 'bottom-40 left-4 md:left-20' },
+    { emoji: '🎲', position: 'bottom-60 right-4 md:right-10' }
   ]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Floating emoji decorations with meme energy */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="max-w-4xl mx-auto text-center w-full">
+        {/* Floating emoji decorations with meme energy - hidden on very small screens */}
         {currentMemes.map((meme, index) => (
           <div 
             key={index}
-            className={`absolute ${meme.position} text-4xl animate-float hover:scale-125 transition-transform cursor-pointer`}
+            className={`absolute ${meme.position} text-2xl md:text-4xl animate-float hover:scale-125 transition-transform cursor-pointer hidden sm:block z-0`}
             style={{ animationDelay: `${index * 0.5}s` }}
             onClick={() => {
               // Randomize memes when clicked
@@ -42,51 +42,51 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
 
         {/* Main content */}
         <div className="relative z-10">
-          <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 md:mb-6 px-2">
             Can't Decide?
           </h1>
-          <h2 className="text-3xl md:text-4xl font-semibold text-gray-800 mb-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800 mb-3 md:mb-4 px-2">
             Let Me Pick For You! 🎯
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base md:text-xl text-gray-600 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
             Enter your options, and let our decision assistant guide you with logic, randomness, or a friendly chat bot.
           </p>
           
           {/* Meme-style encouragement */}
-          <div className="mb-8 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-dashed border-orange-300 max-w-md mx-auto">
-            <p className="text-lg font-bold text-orange-800">
+          <div className="mb-6 md:mb-8 p-3 md:p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-dashed border-orange-300 max-w-sm md:max-w-md mx-auto">
+            <p className="text-sm md:text-lg font-bold text-orange-800">
               POV: You're about to make the best decision of your life! 💯
             </p>
           </div>
 
           {/* Feature cards */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50">
-              <div className="text-3xl mb-3">🎲</div>
-              <h3 className="font-semibold text-lg mb-2">Random Pick</h3>
-              <p className="text-gray-600 text-sm">Let chaos choose with a fun spinning animation</p>
-              <p className="text-xs text-purple-600 font-bold mt-2">*Chef's kiss* 👨‍🍳💋</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12 px-2">
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 animate-wiggle">
+              <div className="text-2xl md:text-3xl mb-2 md:mb-3">🎲</div>
+              <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2">Random Pick</h3>
+              <p className="text-gray-600 text-xs md:text-sm">Let chaos choose with a fun spinning animation</p>
+              <p className="text-xs text-purple-600 font-bold mt-1 md:mt-2">*Chef's kiss* 👨‍🍳💋</p>
             </Card>
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50">
-              <div className="text-3xl mb-3">🤖</div>
-              <h3 className="font-semibold text-lg mb-2">AI Assistant</h3>
-              <p className="text-gray-600 text-sm">Get big brain recommendations based on your needs</p>
-              <p className="text-xs text-blue-600 font-bold mt-2">It's giving genius vibes! 🧠✨</p>
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 animate-wiggle">
+              <div className="text-2xl md:text-3xl mb-2 md:mb-3">🤖</div>
+              <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2">AI Assistant</h3>
+              <p className="text-gray-600 text-xs md:text-sm">Get big brain recommendations based on your needs</p>
+              <p className="text-xs text-blue-600 font-bold mt-1 md:mt-2">It's giving genius vibes! 🧠✨</p>
             </Card>
-            <Card className="p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50">
-              <div className="text-3xl mb-3">📊</div>
-              <h3 className="font-semibold text-lg mb-2">Logic Mode</h3>
-              <p className="text-gray-600 text-sm">Score options on different factors for data-driven decisions</p>
-              <p className="text-xs text-green-600 font-bold mt-2">Math is mathing! 🔢</p>
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 animate-wiggle col-span-1 sm:col-span-2 lg:col-span-1">
+              <div className="text-2xl md:text-3xl mb-2 md:mb-3">📊</div>
+              <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2">Logic Mode</h3>
+              <p className="text-gray-600 text-xs md:text-sm">Score options on different factors for data-driven decisions</p>
+              <p className="text-xs text-green-600 font-bold mt-1 md:mt-2">Math is mathing! 🔢</p>
             </Card>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
             <Button 
               onClick={onStartDeciding}
               size="lg" 
-              className="gradient-primary text-white font-semibold py-4 px-8 text-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+              className="gradient-primary text-white font-semibold py-3 md:py-4 px-6 md:px-8 text-base md:text-lg hover:shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
             >
               Let's Gooo! ✨🚀
             </Button>
@@ -94,14 +94,14 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
               onClick={() => setIsModalOpen(true)}
               variant="outline" 
               size="lg" 
-              className="border-2 border-purple-300 text-purple-600 font-semibold py-4 px-8 text-lg hover:bg-purple-50 transition-all duration-300"
+              className="border-2 border-purple-300 text-purple-600 font-semibold py-3 md:py-4 px-6 md:px-8 text-base md:text-lg hover:bg-purple-50 transition-all duration-300 w-full sm:w-auto"
             >
               How It Works 🔍
             </Button>
           </div>
           
           {/* Bottom meme */}
-          <div className="mt-8 text-sm text-gray-500">
+          <div className="mt-6 md:mt-8 text-xs md:text-sm text-gray-500 px-4">
             <p>No cap, this will change your life! 🧢✨</p>
           </div>
         </div>
