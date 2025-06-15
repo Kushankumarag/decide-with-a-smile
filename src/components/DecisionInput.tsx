@@ -79,9 +79,12 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
 
   const handleModeSelect = (mode: string) => {
     const validOptions = options.filter(option => option.trim() !== '');
+    console.log('Mode selected:', mode, 'Valid options:', validOptions.length, 'Pressure mode:', pressureMode);
+    
     if (validOptions.length >= 2) {
       // Show spin wheel for random mode if not in pressure mode
       if (mode === 'random' && !pressureMode) {
+        console.log('Showing spin wheel');
         setShowSpinWheel(true);
         return;
       }
@@ -97,6 +100,7 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
   };
 
   const handleSpinWheelResult = (selectedOption: string) => {
+    console.log('Spin wheel result:', selectedOption);
     setShowSpinWheel(false);
     // Simulate random mode selection with the spun result
     onModeSelect('random', [selectedOption], context, selectedMood);
@@ -170,11 +174,15 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, i
   }
 
   if (showSpinWheel) {
+    console.log('Rendering spin wheel with options:', validOptions);
     return (
       <SpinWheel
         options={validOptions}
         onResult={handleSpinWheelResult}
-        onSkip={() => setShowSpinWheel(false)}
+        onSkip={() => {
+          console.log('Spin wheel skipped');
+          setShowSpinWheel(false);
+        }}
       />
     );
   }
