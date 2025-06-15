@@ -4,11 +4,14 @@ import { Card } from '@/components/ui/card';
 import HowItWorksModal from './HowItWorksModal';
 import WouldYouRather from './WouldYouRather';
 import HamburgerMenu from './HamburgerMenu';
+import ThemeToggle from './ThemeToggle'; // <-- Add import
+
 interface HeroProps {
   onStartDeciding: () => void;
   onViewHistory: () => void;
   chaosMode?: boolean;
 }
+
 const Hero = ({
   onStartDeciding,
   onViewHistory,
@@ -33,7 +36,9 @@ const Hero = ({
     emoji: '🎲',
     position: 'bottom-60 right-4 md:right-10'
   }]);
+
   const bgClass = chaosMode ? "min-h-screen bg-gradient-to-br from-red-100 via-yellow-100 to-pink-100 animate-pulse" : "min-h-screen bg-gradient-to-br from-purple-50 to-pink-50";
+
   const handleFeatureSelect = (featureId: string) => {
     switch (featureId) {
       case 'decision-maker':
@@ -58,33 +63,44 @@ const Hero = ({
         console.log('Unknown feature:', featureId);
     }
   };
+
   if (showWouldYouRather) {
     return <WouldYouRather onClose={() => setShowWouldYouRather(false)} />;
   }
-  return <div className={`${bgClass} flex items-center justify-center p-4 relative overflow-hidden`}>
+
+  return (
+    <div className={`${bgClass} flex items-center justify-center p-4 relative overflow-hidden`}>
+      <ThemeToggle />
       {/* Hamburger Menu */}
       <HamburgerMenu onFeatureSelect={handleFeatureSelect} />
 
       <div className="max-w-4xl mx-auto text-center w-full">
         {/* Floating emoji decorations with meme energy - hidden on very small screens */}
-        {currentMemes.map((meme, index) => <div key={index} className={`absolute ${meme.position} text-2xl md:text-4xl animate-float hover:scale-125 transition-transform cursor-pointer hidden sm:block z-0`} style={{
-        animationDelay: `${index * 0.5}s`
-      }} onClick={() => {
-        // Randomize memes when clicked
-        const newMemes = [...currentMemes];
-        newMemes[index].emoji = floatingMemes[Math.floor(Math.random() * floatingMemes.length)];
-        setCurrentMemes(newMemes);
-      }}>
+        {currentMemes.map((meme, index) => (
+          <div
+            key={index}
+            className={`absolute ${meme.position} text-2xl md:text-4xl animate-float hover:scale-125 transition-transform cursor-pointer hidden sm:block z-0`}
+            style={{ animationDelay: `${index * 0.5}s` }}
+            onClick={() => {
+              // Randomize memes when clicked
+              const newMemes = [...currentMemes];
+              newMemes[index].emoji = floatingMemes[Math.floor(Math.random() * floatingMemes.length)];
+              setCurrentMemes(newMemes);
+            }}
+          >
             {meme.emoji}
-          </div>)}
+          </div>
+        ))}
 
         {/* Main content */}
         <div className="relative z-10">
-          {chaosMode && <div className="mb-4 p-3 md:p-4 bg-gradient-to-r from-red-200 to-orange-200 rounded-lg border-2 border-dashed border-red-400 max-w-sm md:max-w-md mx-auto animate-wiggle">
+          {chaosMode && (
+            <div className="mb-4 p-3 md:p-4 bg-gradient-to-r from-red-200 to-orange-200 rounded-lg border-2 border-dashed border-red-400 max-w-sm md:max-w-md mx-auto animate-wiggle">
               <p className="text-sm md:text-lg font-bold text-red-800">
                 🌪️ CHAOS MODE ACTIVATED! Reality.exe has stopped working! 🌪️
               </p>
-            </div>}
+            </div>
+          )}
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 md:mb-6 px-2">
             Can't Decide?
@@ -155,6 +171,8 @@ const Hero = ({
 
       {/* Modal */}
       <HowItWorksModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </div>;
+    </div>
+  );
 };
+
 export default Hero;
