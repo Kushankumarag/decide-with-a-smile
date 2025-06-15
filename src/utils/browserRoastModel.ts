@@ -1,3 +1,4 @@
+
 import { pipeline, env } from "@huggingface/transformers";
 
 // Always use the latest models from Hugging Face Hub, not browser cache
@@ -6,12 +7,13 @@ env.useBrowserCache = false;
 
 let generatorPromise: Promise<any> | null = null;
 
-// We'll use TinyLlama for best speed and small size. The pipeline will auto-download the model on first use.
+// We'll use distilGPT2 for compatibility and speed. It provides ONNX for browser.
+// See model card: https://huggingface.co/Xenova/distilGPT2
 export async function getTextGenerator() {
   if (!generatorPromise) {
     generatorPromise = pipeline(
       "text-generation",
-      "TinyLlama/TinyLlama-1.1B-Chat-v1.0", // Small, chat-tuned, and available for browser
+      "Xenova/distilGPT2", // Small, ONNX-compatible, loads quickly in browser
       { device: "webgpu" }
     );
   }
@@ -39,3 +41,4 @@ export async function browserRoast(input: string): Promise<string> {
   }
   throw new Error("No roast generated locally.");
 }
+
