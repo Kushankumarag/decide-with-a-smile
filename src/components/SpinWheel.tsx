@@ -49,37 +49,60 @@ const SpinWheel = ({ options, onResult, onSkip }: SpinWheelProps) => {
         </h2>
         
         <div className="relative mx-auto mb-8" style={{ width: '300px', height: '300px' }}>
-          {/* Wheel */}
-          <div 
-            className="relative w-full h-full rounded-full border-4 border-gray-800 overflow-hidden"
+          {/* Wheel SVG */}
+          <svg
+            width="300"
+            height="300"
+            className="rounded-full border-4 border-gray-800"
             style={{
               transform: `rotate(${rotation}deg)`,
               transition: isSpinning ? 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none'
             }}
           >
-            {options.map((option, index) => (
-              <div
-                key={index}
-                className="absolute inset-0 flex items-center justify-center text-white font-semibold text-sm"
-                style={{
-                  backgroundColor: colors[index % colors.length],
-                  clipPath: `polygon(50% 50%, ${50 + 40 * Math.cos((index * segmentAngle - 90) * Math.PI / 180)}% ${50 + 40 * Math.sin((index * segmentAngle - 90) * Math.PI / 180)}%, ${50 + 40 * Math.cos(((index + 1) * segmentAngle - 90) * Math.PI / 180)}% ${50 + 40 * Math.sin(((index + 1) * segmentAngle - 90) * Math.PI / 180)}%)`,
-                  transformOrigin: 'center'
-                }}
-              >
-                <span 
-                  style={{
-                    transform: `rotate(${index * segmentAngle + segmentAngle/2}deg)`,
-                    maxWidth: '80px',
-                    lineHeight: '1.2',
-                    wordBreak: 'break-word'
-                  }}
-                >
-                  {option}
-                </span>
-              </div>
-            ))}
-          </div>
+            {options.map((option, index) => {
+              const startAngle = (index * segmentAngle - 90) * (Math.PI / 180);
+              const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180);
+              const x1 = 150 + 130 * Math.cos(startAngle);
+              const y1 = 150 + 130 * Math.sin(startAngle);
+              const x2 = 150 + 130 * Math.cos(endAngle);
+              const y2 = 150 + 130 * Math.sin(endAngle);
+              const largeArcFlag = segmentAngle > 180 ? 1 : 0;
+              
+              const pathData = [
+                `M 150 150`,
+                `L ${x1} ${y1}`,
+                `A 130 130 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                `Z`
+              ].join(' ');
+
+              const textAngle = (index * segmentAngle + segmentAngle / 2 - 90) * (Math.PI / 180);
+              const textX = 150 + 80 * Math.cos(textAngle);
+              const textY = 150 + 80 * Math.sin(textAngle);
+
+              return (
+                <g key={index}>
+                  <path
+                    d={pathData}
+                    fill={colors[index % colors.length]}
+                    stroke="#374151"
+                    strokeWidth="2"
+                  />
+                  <text
+                    x={textX}
+                    y={textY}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="white"
+                    fontSize="14"
+                    fontWeight="bold"
+                    transform={`rotate(${index * segmentAngle + segmentAngle / 2}, ${textX}, ${textY})`}
+                  >
+                    {option.length > 12 ? option.substring(0, 12) + '...' : option}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
           
           {/* Pointer */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2">
@@ -101,7 +124,7 @@ const SpinWheel = ({ options, onResult, onSkip }: SpinWheelProps) => {
           <Button
             onClick={spinWheel}
             disabled={isSpinning}
-            className="gradient-primary text-white font-semibold px-6 py-3"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-3"
           >
             {isSpinning ? '🌪️ Spinning...' : '🎡 Spin the Wheel!'}
           </Button>
