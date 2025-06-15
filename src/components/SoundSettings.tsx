@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX, Sparkles, AlertCircle } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { useSoundEffects } from '../hooks/useSoundEffects';
 
 const SoundSettings = () => {
@@ -33,17 +33,6 @@ const SoundSettings = () => {
           )}
         </div>
       </Button>
-
-      {/* Demo Notice */}
-      <div className="px-4">
-        <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-          <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-          <div className="text-xs text-amber-800">
-            <p className="font-medium mb-1">Demo Mode</p>
-            <p>Sound effects aren't available in this demo environment. In a real app, you'd add MP3 files to the public/sounds/ folder!</p>
-          </div>
-        </div>
-      </div>
 
       {/* Volume Control */}
       {soundEnabled && (
@@ -88,7 +77,7 @@ const SoundSettings = () => {
       <div className="px-4">
         <p className="text-xs text-gray-500 text-center">
           {soundEnabled 
-            ? '🎵 Sounds would auto-play when decisions are revealed (with real audio files)'
+            ? '🎵 Synthetic sounds will auto-play when decisions are revealed!'
             : '🔇 Enable sounds for extra meme energy!'
           }
         </p>

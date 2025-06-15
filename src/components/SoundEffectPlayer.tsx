@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw } from 'lucide-react';
 import { useSoundEffects, SoundMode } from '../hooks/useSoundEffects';
 
 interface SoundEffectPlayerProps {
@@ -26,11 +26,7 @@ const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffect
           
           // Trigger sound wave animation
           setSoundWaves(true);
-          setTimeout(() => setSoundWaves(false), 1500);
-        } else {
-          // Show visual feedback even if sound fails
-          setSoundWaves(true);
-          setTimeout(() => setSoundWaves(false), 1000);
+          setTimeout(() => setSoundWaves(false), sound.duration * 1000);
         }
       }, 500); // Small delay after result appears
 
@@ -41,7 +37,9 @@ const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffect
   const handleReplaySound = () => {
     replayLastSound();
     setSoundWaves(true);
-    setTimeout(() => setSoundWaves(false), 1500);
+    if (lastPlayedSound) {
+      setTimeout(() => setSoundWaves(false), lastPlayedSound.duration * 1000);
+    }
   };
 
   if (!soundEnabled) {
@@ -55,14 +53,6 @@ const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffect
 
   return (
     <div className="flex flex-col items-center gap-3 justify-center">
-      {/* Demo notice */}
-      {attemptedPlay && (
-        <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
-          <AlertTriangle className="h-3 w-3" />
-          <span>Demo: Audio files not available</span>
-        </div>
-      )}
-
       <div className="flex items-center gap-3">
         {/* Sound waves animation */}
         <div className={`flex items-center gap-1 transition-opacity duration-300 ${soundWaves ? 'opacity-100' : 'opacity-30'}`}>
@@ -97,7 +87,7 @@ const SoundEffectPlayer = ({ mode, autoPlay = true, onSoundPlayed }: SoundEffect
       {/* Last played sound name */}
       {lastPlayedSound && (
         <span className="text-xs text-purple-600 font-medium">
-          Would play: "{lastPlayedSound.name}"
+          🎵 "{lastPlayedSound.name}"
         </span>
       )}
     </div>
