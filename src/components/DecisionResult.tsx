@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { Mood } from '../types';
 import SoundEffectPlayer from './SoundEffectPlayer';
 import { SoundMode } from '../hooks/useSoundEffects';
+import FeedbackPopup from './FeedbackPopup';
 
 interface DecisionResultProps {
   mode: string;
@@ -25,6 +26,7 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
   const [isRevealing, setIsRevealing] = useState(true);
   const [explanation, setExplanation] = useState<string>('');
   const [soundTriggered, setSoundTriggered] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(true);
 
   // Map decision modes to sound modes
   const getSoundMode = (): SoundMode => {
@@ -363,6 +365,12 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
           </p>
         </div>
       </div>
+      {showFeedback && (
+        <FeedbackPopup
+          answer={result}
+          onClose={() => setShowFeedback(false)}
+        />
+      )}
     </div>
   );
 };
