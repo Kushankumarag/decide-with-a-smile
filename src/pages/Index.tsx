@@ -13,6 +13,7 @@ const Index = () => {
     options: [] as string[],
     context: '',
   });
+  const [decisionKey, setDecisionKey] = useState(0);
 
   const handleStartDeciding = () => {
     setCurrentState('input');
@@ -20,17 +21,17 @@ const Index = () => {
 
   const handleModeSelect = (mode: string, options: string[], context: string) => {
     setDecisionData({ mode, options, context });
+    setDecisionKey(prev => prev + 1);
     setCurrentState('result');
   };
 
   const handleDecideAgain = () => {
-    setCurrentState('result');
-    // Force a re-render by updating the key
-    setTimeout(() => setCurrentState('result'), 100);
+    setDecisionKey(prev => prev + 1);
   };
 
   const handleStartOver = () => {
     setDecisionData({ mode: '', options: [], context: '' });
+    setDecisionKey(0);
     setCurrentState('hero');
   };
 
@@ -46,7 +47,7 @@ const Index = () => {
     case 'result':
       return (
         <DecisionResult
-          key={Date.now()} // Force re-render for decide again
+          key={decisionKey}
           mode={decisionData.mode}
           options={decisionData.options}
           context={decisionData.context}
