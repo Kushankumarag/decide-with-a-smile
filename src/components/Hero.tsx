@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import HowItWorksModal from './HowItWorksModal';
+import WouldYouRather from './WouldYouRather';
 
 interface HeroProps {
   onStartDeciding: () => void;
@@ -11,6 +12,7 @@ interface HeroProps {
 
 const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showWouldYouRather, setShowWouldYouRather] = useState(false);
 
   // Fun floating memes that appear randomly
   const floatingMemes = ['🤔', '✨', '🎯', '🎲', '🧠', '💡', '🎪', '🎭'];
@@ -24,6 +26,10 @@ const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
   const bgClass = chaosMode 
     ? "min-h-screen bg-gradient-to-br from-red-100 via-yellow-100 to-pink-100 animate-pulse" 
     : "min-h-screen bg-gradient-to-br from-purple-50 to-pink-50";
+
+  if (showWouldYouRather) {
+    return <WouldYouRather onClose={() => setShowWouldYouRather(false)} />;
+  }
 
   return (
     <div className={`${bgClass} flex items-center justify-center p-4 relative overflow-hidden`}>
@@ -73,7 +79,7 @@ const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
           </div>
 
           {/* Feature cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12 px-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12 px-2">
             <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 animate-wiggle">
               <div className="text-2xl md:text-3xl mb-2 md:mb-3">🎲</div>
               <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2">Random Pick</h3>
@@ -92,6 +98,13 @@ const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
               <p className="text-gray-600 text-xs md:text-sm">Score options on different factors for data-driven decisions</p>
               <p className="text-xs text-green-600 font-bold mt-1 md:mt-2">Math is mathing! 🔢</p>
             </Card>
+            
+            <Card className="p-4 md:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-gradient-to-br hover:from-red-50 hover:to-orange-50 animate-wiggle col-span-1 sm:col-span-2 lg:col-span-1">
+              <div className="text-2xl md:text-3xl mb-2 md:mb-3">🤔</div>
+              <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2">Would You Rather?</h3>
+              <p className="text-gray-600 text-xs md:text-sm">Swipe through fun dilemmas Tinder-style</p>
+              <p className="text-xs text-red-600 font-bold mt-1 md:mt-2">Choose your chaos! 🔥</p>
+            </Card>
           </div>
 
           {/* CTA Buttons */}
@@ -102,6 +115,13 @@ const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
               className="gradient-primary text-white font-semibold py-3 md:py-4 px-6 md:px-8 text-base md:text-lg hover:shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
             >
               Let's Gooo! ✨🚀
+            </Button>
+            <Button 
+              onClick={() => setShowWouldYouRather(true)}
+              size="lg" 
+              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-semibold py-3 md:py-4 px-6 md:px-8 text-base md:text-lg hover:shadow-lg transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+            >
+              Would You Rather? 🤔🔥
             </Button>
             <Button 
               onClick={() => setIsModalOpen(true)}
