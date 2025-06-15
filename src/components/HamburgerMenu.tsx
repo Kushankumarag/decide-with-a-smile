@@ -7,7 +7,7 @@ import {
   DrawerTitle,
   DrawerClose,
 } from '@/components/ui/drawer';
-import { Menu, X, Brain, Shuffle, Sparkles, BookOpen, Users, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Menu, X, Brain, Shuffle, Sparkles, BookOpen, Users, Volume2, VolumeX } from 'lucide-react';
 
 interface HamburgerMenuProps {
   onFeatureSelect: (feature: string) => void;
