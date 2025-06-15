@@ -1,3 +1,4 @@
+import FeatureMenuBar from "@/components/FeatureMenuBar";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -48,49 +49,52 @@ export default function RoastMyDay() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-yellow-50 via-pink-50 to-rose-50 p-4">
-      <Card className="max-w-lg w-full mx-auto p-6 md:p-10 shadow-xl text-center border-2 border-orange-200 bg-white/70">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">
-          📓 Roast My Day
-        </h1>
-        <p className="text-md text-gray-600 mb-4">
-          Enter something you did, a decision you made, or just how your day’s going.
-        </p>
-        <Textarea 
-          value={input}
-          placeholder="e.g., Ate cereal with water, or spent 2 hours watching cat videos"
-          rows={2}
-          className="mb-2"
-          onChange={e => setInput(e.target.value)}
-          autoFocus
-          disabled={loading}
-        />
-        {showInputError && (
-          <div className="text-xs text-red-500 mb-2">Type something to roast 👈</div>
-        )}
-        <Button className="mb-2 w-full" onClick={handleGetRoast} disabled={loading}>
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="animate-spin">🔥</span> Roasting...
-            </span>
-          ) : (
-            <>🔥 Roast me!</>
+    <>
+      <FeatureMenuBar />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-yellow-50 via-pink-50 to-rose-50 p-4">
+        <Card className="max-w-lg w-full mx-auto p-6 md:p-10 shadow-xl text-center border-2 border-orange-200 bg-white/70">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">
+            📓 Roast My Day
+          </h1>
+          <p className="text-md text-gray-600 mb-4">
+            Enter something you did, a decision you made, or just how your day’s going.
+          </p>
+          <Textarea 
+            value={input}
+            placeholder="e.g., Ate cereal with water, or spent 2 hours watching cat videos"
+            rows={2}
+            className="mb-2"
+            onChange={e => setInput(e.target.value)}
+            autoFocus
+            disabled={loading}
+          />
+          {showInputError && (
+            <div className="text-xs text-red-500 mb-2">Type something to roast 👈</div>
           )}
-        </Button>
-        {apiError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-2 rounded my-2">
-            {apiError}
-          </div>
-        )}
-        {roast && (
-          <Card className="bg-rose-50 border-2 border-rose-200 py-6 px-3 my-4 animate-wiggle">
-            <p className="text-rose-700 font-semibold whitespace-pre-line">{roast}</p>
-          </Card>
-        )}
-        <Button onClick={() => navigate(-1)} variant="outline" className="mt-2 text-orange-700">
-          ← Back
-        </Button>
-      </Card>
-    </div>
+          <Button className="mb-2 w-full" onClick={handleGetRoast} disabled={loading}>
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-spin">🔥</span> Roasting...
+              </span>
+            ) : (
+              <>🔥 Roast me!</>
+            )}
+          </Button>
+          {apiError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 p-2 rounded my-2">
+              {apiError}
+            </div>
+          )}
+          {roast && (
+            <Card className="bg-rose-50 border-2 border-rose-200 py-6 px-3 my-4 animate-wiggle">
+              <p className="text-rose-700 font-semibold whitespace-pre-line">{roast}</p>
+            </Card>
+          )}
+          <Button onClick={() => navigate(-1)} variant="outline" className="mt-2 text-orange-700">
+            ← Back
+          </Button>
+        </Card>
+      </div>
+    </>
   );
 }

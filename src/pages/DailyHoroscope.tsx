@@ -1,4 +1,4 @@
-
+import FeatureMenuBar from "@/components/FeatureMenuBar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -37,17 +37,20 @@ export default function DailyHoroscope() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 p-4">
-      <Card className="max-w-md w-full mx-auto p-6 md:p-10 shadow-xl text-center border-2 border-purple-200 bg-white/80">
-        <h1 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          🔮 Daily Vibe Horoscope
-        </h1>
-        <div className="text-5xl mb-2">{sign}</div>
-        <p className="text-lg md:text-xl text-purple-700 font-medium mb-6">{text}</p>
-        <Button onClick={() => navigate(-1)} variant="outline" className="mt-2 text-purple-700">
-          ← Back
-        </Button>
-      </Card>
-    </div>
+    <>
+      <FeatureMenuBar />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 p-4">
+        <Card className="max-w-md w-full mx-auto p-6 md:p-10 shadow-xl text-center border-2 border-purple-200 bg-white/80">
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            🔮 Daily Vibe Horoscope
+          </h1>
+          <div className="text-5xl mb-2">{sign}</div>
+          <p className="text-lg md:text-xl text-purple-700 font-medium mb-6">{text}</p>
+          <Button onClick={() => navigate(-1)} variant="outline" className="mt-2 text-purple-700">
+            ← Back
+          </Button>
+        </Card>
+      </div>
+    </>
   );
 }

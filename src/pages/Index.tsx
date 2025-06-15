@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import FeatureMenuBar from '@/components/FeatureMenuBar';
 import Hero from '@/components/Hero';
 import DecisionInput from '@/components/DecisionInput';
 import DecisionResult from '@/components/DecisionResult';
@@ -150,6 +150,7 @@ const Index = () => {
 
   return (
     <>
+      <FeatureMenuBar />
       {renderCurrentState()}
       {newAchievement && (
         <AchievementToast
