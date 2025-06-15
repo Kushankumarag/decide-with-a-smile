@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -15,6 +16,7 @@ interface DecisionResultProps {
 const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, onChangeMode }: DecisionResultProps) => {
   const [result, setResult] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const [memeReaction, setMemeReaction] = useState<string>('');
   const [isRevealing, setIsRevealing] = useState(true);
 
   useEffect(() => {
@@ -36,30 +38,66 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
   const generateDecision = () => {
     let selectedOption: string;
     let decisionMessage: string;
+    let meme: string;
+
+    const memeReactions = [
+      "This is the way! 🤌",
+      "Big brain energy! 🧠✨",
+      "Chef's kiss! 👨‍🍳💋",
+      "It's giving main character vibes! 💅",
+      "No cap, this is it! 🧢",
+      "Periodt! 💯",
+      "That's bussin! 🔥",
+      "Living your best life! ✨",
+      "Slay queen/king! 👑",
+      "Touch grass? Nah, touch this decision! 🌱"
+    ];
 
     switch (mode) {
       case 'random':
         selectedOption = options[Math.floor(Math.random() * options.length)];
-        decisionMessage = "The universe has spoken! 🌟";
+        const randomMessages = [
+          "The RNG gods have spoken! 🎲",
+          "Plot twist: The universe picked this! 🌌",
+          "Random.exe has executed successfully! 💻",
+          "Chaos chose chaos... and this! 🌪️",
+          "The dice said 'yeet' and landed on this! 🎯"
+        ];
+        decisionMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
         break;
         
       case 'ai':
         selectedOption = options[Math.floor(Math.random() * options.length)];
-        decisionMessage = "Based on my analysis, this seems like the best choice! 🤖✨";
+        const aiMessages = [
+          "My neural networks are vibing with this choice! 🤖🧠",
+          "After calculating 42 million possibilities... this! 🔢",
+          "Beep boop... optimal choice detected! 🤖✨",
+          "My AI brain says: 'This one sparks joy!' 🎯",
+          "Processing... Processing... EUREKA! This is it! 💡"
+        ];
+        decisionMessage = aiMessages[Math.floor(Math.random() * aiMessages.length)];
         break;
         
       case 'logic':
-        selectedOption = options[0]; // For demo, pick first option
-        decisionMessage = "After weighing all factors, this is the most logical choice! 📊";
+        selectedOption = options[0];
+        const logicMessages = [
+          "The data doesn't lie... unlike my ex! 📊💔",
+          "Science says this is the move! 🔬",
+          "Logic has entered the chat! 🧮",
+          "Math is mathing perfectly here! ➕➖",
+          "My spreadsheet is crying tears of joy! 📈😭"
+        ];
+        decisionMessage = logicMessages[Math.floor(Math.random() * logicMessages.length)];
         break;
         
       case 'sassy':
         selectedOption = options[Math.floor(Math.random() * options.length)];
         const sassyMessages = [
-          "Seriously? You needed me to decide this? 😏",
-          "Oh honey, this one's obvious! 💅",
-          "I can't believe you're overthinking this! 🙄",
-          "Trust me on this one, bestie! 💖"
+          "Bestie, were you really gonna pick anything else? 💅",
+          "Not me having to explain basic decisions! 🙄💖",
+          "The audacity to doubt this choice! 😤✨",
+          "Main character energy is choosing this! 🌟",
+          "Sorry not sorry, but this is THE choice! 💋"
         ];
         decisionMessage = sassyMessages[Math.floor(Math.random() * sassyMessages.length)];
         break;
@@ -69,8 +107,10 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
         decisionMessage = "Here's your pick!";
     }
 
+    meme = memeReactions[Math.floor(Math.random() * memeReactions.length)];
     setResult(selectedOption);
     setMessage(decisionMessage);
+    setMemeReaction(meme);
   };
 
   const getModeEmoji = () => {
@@ -94,12 +134,20 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
   };
 
   if (isRevealing) {
+    const loadingMemes = [
+      "Calculating the vibes... 🧮✨",
+      "Asking the universe... 🌌",
+      "Consulting the meme council... 🏛️",
+      "Loading wisdom.exe... 💻",
+      "Summoning decision energy... ⚡"
+    ];
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
         <Card className="p-12 text-center max-w-md mx-auto">
           <div className="text-6xl mb-6 animate-spin">🎯</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Making Your Decision...
+            {loadingMemes[Math.floor(Math.random() * loadingMemes.length)]}
           </h2>
           <div className="flex justify-center space-x-2">
             <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce"></div>
@@ -130,9 +178,12 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {result}
             </h2>
-            <p className="text-xl text-gray-700 mb-8 font-medium">
+            <p className="text-xl text-gray-700 mb-4 font-medium">
               {message}
             </p>
+            <div className="text-2xl mb-6 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-dashed border-orange-300">
+              {memeReaction}
+            </div>
 
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -140,21 +191,21 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
                   onClick={onDecideAgain}
                   className="gradient-primary text-white font-semibold py-3 px-6 hover:shadow-lg transition-all duration-300 hover:scale-105"
                 >
-                  🔄 Decide Again
+                  🔄 Run It Back!
                 </Button>
                 <Button
                   onClick={onChangeMode}
                   variant="outline"
                   className="border-2 border-orange-300 text-orange-600 font-semibold py-3 px-6 hover:bg-orange-50 transition-all duration-300"
                 >
-                  🎯 Try Different Mode
+                  🎯 Switch Vibes
                 </Button>
                 <Button
                   onClick={onStartOver}
                   variant="outline"
                   className="border-2 border-purple-300 text-purple-600 font-semibold py-3 px-6 hover:bg-purple-50 transition-all duration-300"
                 >
-                  🏠 Start Over
+                  🏠 Fresh Start
                 </Button>
               </div>
               
@@ -166,7 +217,7 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
                       key={index}
                       className={`px-3 py-1 rounded-full text-sm ${
                         option === result
-                          ? 'bg-purple-200 text-purple-800 font-semibold'
+                          ? 'bg-purple-200 text-purple-800 font-semibold animate-pulse'
                           : 'bg-gray-100 text-gray-600'
                       }`}
                     >
@@ -181,7 +232,7 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
 
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">
-            Remember: This is just for fun! Trust your instincts too. 😊
+            Remember: This is just for fun! Trust your gut too, bestie! 😊✨
           </p>
         </div>
       </div>
