@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { ArrowLeft, ArrowRight, Heart, X, Shuffle, Home } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Heart, X, Shuffle, Home, Settings } from 'lucide-react';
 
 interface WYRQuestion {
   id: string;
@@ -23,6 +22,8 @@ const WouldYouRather = ({ onClose }: WouldYouRatherProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: 'A' | 'B' }>({});
+  const [maxQuestions, setMaxQuestions] = useState(10);
+  const [questionsAnswered, setQuestionsAnswered] = useState(0);
   
   const questions: WYRQuestion[] = [
     // Food Theme
@@ -114,7 +115,7 @@ const WouldYouRather = ({ onClose }: WouldYouRatherProps) => {
   });
 
   const currentQuestion = shuffledQuestions[currentIndex];
-  const progress = ((currentIndex + 1) / shuffledQuestions.length) * 100;
+  const progress = Math.min(((questionsAnswered) / maxQuestions) * 100, 100);
 
   const handleChoice = (choice: 'A' | 'B', direction: 'left' | 'right') => {
     if (isAnimating) return;
@@ -124,11 +125,19 @@ const WouldYouRather = ({ onClose }: WouldYouRatherProps) => {
       [currentQuestion.id]: choice
     }));
     
+    setQuestionsAnswered(prev => prev + 1);
     setSwipeDirection(direction);
     setIsAnimating(true);
     
     setTimeout(() => {
-      if (currentIndex < shuffledQuestions.length - 1) {
+      if (questionsAnswered + 1 >= maxQuestions) {
+        // Show completion message and reset
+        setTimeout(() => {
+          setCurrentIndex(0);
+          setQuestionsAnswered(0);
+          setSelectedAnswers({});
+        }, 2000);
+      } else if (currentIndex < shuffledQuestions.length - 1) {
         setCurrentIndex(prev => prev + 1);
       } else {
         // Reset to beginning for infinite loop
@@ -142,6 +151,7 @@ const WouldYouRather = ({ onClose }: WouldYouRatherProps) => {
   const shuffleQuestions = () => {
     setCurrentIndex(0);
     setSelectedAnswers({});
+    setQuestionsAnswered(0);
   };
 
   const getThemeColor = (theme: string) => {
@@ -164,6 +174,38 @@ const WouldYouRather = ({ onClose }: WouldYouRatherProps) => {
     return colors[theme as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-200';
   };
 
+  if (questionsAnswered >= maxQuestions) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4 flex items-center justify-center">
+        <Card className="max-w-md mx-auto p-8 text-center">
+          <div className="text-6xl mb-4">🎉</div>
+          <h2 className="text-2xl font-bold mb-4">Challenge Complete!</h2>
+          <p className="text-gray-600 mb-6">
+            You answered {maxQuestions} questions! 
+          </p>
+          <div className="space-y-2 mb-6">
+            <div className="flex justify-center gap-4 text-sm text-gray-600">
+              <span>👈 Option A: {Object.values(selectedAnswers).filter(a => a === 'A').length}</span>
+              <span>👉 Option B: {Object.values(selectedAnswers).filter(a => a === 'B').length}</span>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <Button onClick={() => {
+              setQuestionsAnswered(0);
+              setSelectedAnswers({});
+              setCurrentIndex(0);
+            }} className="w-full">
+              Play Again 🔄
+            </Button>
+            <Button onClick={onClose} variant="outline" className="w-full">
+              Back to Home 🏠
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
       {/* Header with Progress Slider */}
@@ -181,9 +223,29 @@ const WouldYouRather = ({ onClose }: WouldYouRatherProps) => {
           </Button>
         </div>
         
+        {/* Question Count Selector */}
+        <div className="mb-4 p-4 bg-white/70 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium">Questions to Answer:</span>
+            <span className="text-lg font-bold text-purple-600">{maxQuestions}</span>
+          </div>
+          <Slider
+            value={[maxQuestions]}
+            onValueChange={(value) => setMaxQuestions(value[0])}
+            min={5}
+            max={50}
+            step={5}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>5</span>
+            <span>50</span>
+          </div>
+        </div>
+        
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-gray-600">
-            <span>Question {currentIndex + 1} of {shuffledQuestions.length}</span>
+            <span>Question {questionsAnswered + 1} of {maxQuestions}</span>
             <span>{Math.round(progress)}%</span>
           </div>
           <Slider
@@ -286,7 +348,7 @@ const WouldYouRather = ({ onClose }: WouldYouRatherProps) => {
         <div className="mt-4 p-4 bg-white/50 rounded-lg">
           <div className="text-center">
             <p className="text-sm font-medium text-gray-700">
-              Questions Answered: {Object.keys(selectedAnswers).length}
+              Questions Answered: {questionsAnswered} / {maxQuestions}
             </p>
             <div className="flex justify-center gap-4 mt-2 text-xs text-gray-600">
               <span>👈 Option A: {Object.values(selectedAnswers).filter(a => a === 'A').length}</span>

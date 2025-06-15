@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import HowItWorksModal from './HowItWorksModal';
 import WouldYouRather from './WouldYouRather';
+import HamburgerMenu from './HamburgerMenu';
 
 interface HeroProps {
   onStartDeciding: () => void;
@@ -13,6 +14,7 @@ interface HeroProps {
 const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showWouldYouRather, setShowWouldYouRather] = useState(false);
+  const [currentFeature, setCurrentFeature] = useState<string | null>(null);
 
   // Fun floating memes that appear randomly
   const floatingMemes = ['🤔', '✨', '🎯', '🎲', '🧠', '💡', '🎪', '🎭'];
@@ -27,12 +29,40 @@ const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
     ? "min-h-screen bg-gradient-to-br from-red-100 via-yellow-100 to-pink-100 animate-pulse" 
     : "min-h-screen bg-gradient-to-br from-purple-50 to-pink-50";
 
+  const handleFeatureSelect = (featureId: string) => {
+    switch (featureId) {
+      case 'decision-maker':
+        onStartDeciding();
+        break;
+      case 'would-you-rather':
+        setShowWouldYouRather(true);
+        break;
+      case 'daily-horoscope':
+        // Placeholder for future feature
+        alert('🔮 Daily Vibe Horoscope coming soon! Stay tuned for cosmic decision guidance! ✨');
+        break;
+      case 'roast-my-day':
+        // Placeholder for future feature
+        alert('📓 Roast My Day feature coming soon! Get ready for some savage AI commentary! 🔥');
+        break;
+      case 'personality-quiz':
+        // Placeholder for future feature
+        alert('🎭 Decision Personality Quiz coming soon! Discover your unique decision-making style! 🧠');
+        break;
+      default:
+        console.log('Unknown feature:', featureId);
+    }
+  };
+
   if (showWouldYouRather) {
     return <WouldYouRather onClose={() => setShowWouldYouRather(false)} />;
   }
 
   return (
     <div className={`${bgClass} flex items-center justify-center p-4 relative overflow-hidden`}>
+      {/* Hamburger Menu */}
+      <HamburgerMenu onFeatureSelect={handleFeatureSelect} />
+
       <div className="max-w-4xl mx-auto text-center w-full">
         {/* Floating emoji decorations with meme energy - hidden on very small screens */}
         {currentMemes.map((meme, index) => (
