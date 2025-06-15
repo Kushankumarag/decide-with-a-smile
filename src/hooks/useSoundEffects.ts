@@ -6,7 +6,7 @@ export type SoundMode = 'random' | 'ai' | 'logic' | 'sassy' | 'reverse' | 'party
 interface SoundEffect {
   id: string;
   name: string;
-  generator: () => void;
+  fileName: string;
   duration: number;
 }
 
@@ -21,261 +21,43 @@ export const useSoundEffects = () => {
     return saved ? parseFloat(saved) : 0.7;
   });
   
-  const audioContextRef = useRef<AudioContext | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [lastPlayedSound, setLastPlayedSound] = useState<SoundEffect | null>(null);
-
-  // Initialize audio context
-  const getAudioContext = useCallback(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-    return audioContextRef.current;
-  }, []);
-
-  // Sound generators
-  const generateTone = useCallback((frequency: number, duration: number, type: OscillatorType = 'sine') => {
-    const audioContext = getAudioContext();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    oscillator.type = type;
-    
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(volume * 0.3, audioContext.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + duration);
-  }, [volume, getAudioContext]);
-
-  const generateNoise = useCallback((duration: number) => {
-    const audioContext = getAudioContext();
-    const bufferSize = audioContext.sampleRate * duration;
-    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-    const output = buffer.getChannelData(0);
-    
-    for (let i = 0; i < bufferSize; i++) {
-      output[i] = Math.random() * 2 - 1;
-    }
-    
-    const noise = audioContext.createBufferSource();
-    const gainNode = audioContext.createGain();
-    
-    noise.buffer = buffer;
-    noise.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    gainNode.gain.setValueAtTime(volume * 0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-    
-    noise.start();
-  }, [volume, getAudioContext]);
-
-  const generateDrum = useCallback(() => {
-    const audioContext = getAudioContext();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.setValueAtTime(80, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    oscillator.type = 'triangle';
-    
-    gainNode.gain.setValueAtTime(volume * 0.5, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.5);
-  }, [volume, getAudioContext]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Create sound effects for each mode
   const createSoundEffects = useCallback((): Record<SoundMode, SoundEffect[]> => ({
     random: [
-      {
-        id: 'bruh',
-        name: 'Bruh Sound',
-        generator: () => {
-          generateTone(200, 0.3, 'sawtooth');
-          setTimeout(() => generateTone(150, 0.4, 'sawtooth'), 300);
-        },
-        duration: 0.8
-      },
-      {
-        id: 'vine-boom',
-        name: 'Vine Boom',
-        generator: () => generateDrum(),
-        duration: 0.5
-      },
-      {
-        id: 'yeet',
-        name: 'Yeet!',
-        generator: () => {
-          generateTone(400, 0.1, 'square');
-          setTimeout(() => generateTone(600, 0.1, 'square'), 100);
-          setTimeout(() => generateTone(800, 0.2, 'square'), 200);
-        },
-        duration: 0.5
-      }
+      { id: 'bruh', name: 'Bruh Sound', fileName: 'bruh.mp3', duration: 1.0 },
+      { id: 'vine-boom', name: 'Vine Boom', fileName: 'vine-boom.mp3', duration: 0.8 },
+      { id: 'yeet', name: 'Yeet!', fileName: 'yeet.mp3', duration: 0.6 }
     ],
     ai: [
-      {
-        id: 'beep-boop',
-        name: 'Beep Boop',
-        generator: () => {
-          generateTone(800, 0.2, 'square');
-          setTimeout(() => generateTone(400, 0.2, 'square'), 300);
-          setTimeout(() => generateTone(600, 0.2, 'square'), 600);
-        },
-        duration: 1.0
-      },
-      {
-        id: 'calculating',
-        name: 'Calculating...',
-        generator: () => {
-          for (let i = 0; i < 5; i++) {
-            setTimeout(() => generateTone(300 + i * 50, 0.1, 'sine'), i * 150);
-          }
-        },
-        duration: 1.0
-      },
-      {
-        id: 'windows-xp',
-        name: 'Startup Sound',
-        generator: () => {
-          const notes = [523, 659, 784, 1047];
-          notes.forEach((freq, i) => {
-            setTimeout(() => generateTone(freq, 0.3, 'sine'), i * 200);
-          });
-        },
-        duration: 1.2
-      }
+      { id: 'beep-boop', name: 'Beep Boop', fileName: 'beep-boop.mp3', duration: 1.2 },
+      { id: 'robot', name: 'Robot Sound', fileName: 'robot.mp3', duration: 1.0 },
+      { id: 'startup', name: 'Startup Sound', fileName: 'startup.mp3', duration: 1.5 }
     ],
     logic: [
-      {
-        id: 'math',
-        name: 'Math Sound',
-        generator: () => {
-          generateTone(440, 0.2, 'triangle');
-          setTimeout(() => generateTone(554, 0.2, 'triangle'), 200);
-          setTimeout(() => generateTone(659, 0.3, 'triangle'), 400);
-        },
-        duration: 0.8
-      },
-      {
-        id: 'calculator',
-        name: 'Calculator Beep',
-        generator: () => generateTone(1000, 0.1, 'square'),
-        duration: 0.2
-      },
-      {
-        id: 'big-brain',
-        name: 'Big Brain Time',
-        generator: () => {
-          generateTone(300, 0.5, 'sine');
-          setTimeout(() => generateTone(400, 0.5, 'sine'), 250);
-        },
-        duration: 0.8
-      }
+      { id: 'calculator', name: 'Calculator Beep', fileName: 'calculator.mp3', duration: 0.3 },
+      { id: 'thinking', name: 'Thinking Sound', fileName: 'thinking.mp3', duration: 1.0 },
+      { id: 'eureka', name: 'Eureka!', fileName: 'eureka.mp3', duration: 1.2 }
     ],
     sassy: [
-      {
-        id: 'yas-queen',
-        name: 'Yas Queen!',
-        generator: () => {
-          generateTone(500, 0.2, 'triangle');
-          setTimeout(() => generateTone(700, 0.3, 'triangle'), 200);
-          setTimeout(() => generateTone(900, 0.2, 'triangle'), 500);
-        },
-        duration: 0.8
-      },
-      {
-        id: 'attitude-laugh',
-        name: 'Attitude Laugh',
-        generator: () => {
-          for (let i = 0; i < 4; i++) {
-            setTimeout(() => generateTone(400 + i * 100, 0.1, 'sawtooth'), i * 100);
-          }
-        },
-        duration: 0.6
-      },
-      {
-        id: 'periodt',
-        name: 'Periodt!',
-        generator: () => {
-          generateTone(600, 0.1, 'square');
-          setTimeout(() => generateDrum(), 150);
-        },
-        duration: 0.4
-      }
+      { id: 'snip', name: 'Snip Snap', fileName: 'snip.mp3', duration: 0.8 },
+      { id: 'attitude', name: 'Attitude Sound', fileName: 'attitude.mp3', duration: 1.0 },
+      { id: 'periodt', name: 'Periodt!', fileName: 'periodt.mp3', duration: 0.6 }
     ],
     reverse: [
-      {
-        id: 'record-scratch',
-        name: 'Record Scratch',
-        generator: () => generateNoise(0.3),
-        duration: 0.3
-      },
-      {
-        id: 'confused-huh',
-        name: 'Confused Huh?',
-        generator: () => {
-          generateTone(300, 0.2, 'sine');
-          setTimeout(() => generateTone(250, 0.3, 'sine'), 200);
-        },
-        duration: 0.6
-      },
-      {
-        id: 'plot-twist',
-        name: 'Plot Twist!',
-        generator: () => {
-          generateTone(200, 0.3, 'triangle');
-          setTimeout(() => generateTone(400, 0.3, 'triangle'), 200);
-          setTimeout(() => generateTone(800, 0.4, 'triangle'), 400);
-        },
-        duration: 1.0
-      }
+      { id: 'record-scratch', name: 'Record Scratch', fileName: 'scratch.mp3', duration: 0.5 },
+      { id: 'confused', name: 'Confused Sound', fileName: 'confused.mp3', duration: 0.8 },
+      { id: 'plot-twist', name: 'Plot Twist!', fileName: 'twist.mp3', duration: 1.0 }
     ],
     party: [
-      {
-        id: 'airhorn',
-        name: 'Airhorn',
-        generator: () => {
-          generateTone(200, 0.8, 'sawtooth');
-          generateTone(300, 0.8, 'sawtooth');
-          generateTone(400, 0.8, 'sawtooth');
-        },
-        duration: 0.8
-      },
-      {
-        id: 'lets-go',
-        name: "Let's Gooo!",
-        generator: () => {
-          generateTone(400, 0.2, 'square');
-          setTimeout(() => generateTone(600, 0.3, 'square'), 200);
-          setTimeout(() => generateTone(800, 0.4, 'square'), 500);
-        },
-        duration: 1.0
-      },
-      {
-        id: 'party-horn',
-        name: 'Party Horn',
-        generator: () => {
-          const frequencies = [500, 600, 700, 800, 900];
-          frequencies.forEach((freq, i) => {
-            setTimeout(() => generateTone(freq, 0.1, 'triangle'), i * 50);
-          });
-        },
-        duration: 0.5
-      }
+      { id: 'airhorn', name: 'Airhorn', fileName: 'airhorn.mp3', duration: 1.0 },
+      { id: 'party-horn', name: 'Party Horn', fileName: 'party-horn.mp3', duration: 0.8 },
+      { id: 'celebration', name: 'Celebration!', fileName: 'celebration.mp3', duration: 1.5 }
     ]
-  }), [generateTone, generateNoise, generateDrum]);
+  }), []);
 
   const toggleSound = useCallback(() => {
     const newState = !soundEnabled;
@@ -293,12 +75,6 @@ export const useSoundEffects = () => {
     if (!soundEnabled) return null;
 
     try {
-      // Resume audio context if suspended (required by some browsers)
-      const audioContext = getAudioContext();
-      if (audioContext.state === 'suspended') {
-        await audioContext.resume();
-      }
-
       const soundEffects = createSoundEffects();
       const modeEffects = surpriseMe 
         ? Object.values(soundEffects).flat()
@@ -306,19 +82,34 @@ export const useSoundEffects = () => {
       
       const randomEffect = modeEffects[Math.floor(Math.random() * modeEffects.length)];
       
+      // Stop previous audio if playing
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+
+      // Create new audio element
+      const audio = new Audio(`/sounds/${randomEffect.fileName}`);
+      audio.volume = volume;
+      audioRef.current = audio;
+
       setIsPlaying(true);
       setLastPlayedSound(randomEffect);
 
       // Play the sound
-      randomEffect.generator();
+      await audio.play();
 
       // Add haptic feedback on mobile
       if ('vibrate' in navigator) {
         navigator.vibrate([50, 100, 50]);
       }
 
-      // Stop playing after duration
-      setTimeout(() => setIsPlaying(false), randomEffect.duration * 1000);
+      // Handle audio end
+      audio.onended = () => setIsPlaying(false);
+      audio.onerror = () => {
+        console.warn(`Failed to load sound: ${randomEffect.fileName}`);
+        setIsPlaying(false);
+      };
 
       return randomEffect;
     } catch (error) {
@@ -332,15 +123,32 @@ export const useSoundEffects = () => {
       
       return null;
     }
-  }, [soundEnabled, getAudioContext, createSoundEffects]);
+  }, [soundEnabled, volume, createSoundEffects]);
 
-  const replayLastSound = useCallback(() => {
+  const replayLastSound = useCallback(async () => {
     if (soundEnabled && lastPlayedSound) {
-      setIsPlaying(true);
-      lastPlayedSound.generator();
-      setTimeout(() => setIsPlaying(false), lastPlayedSound.duration * 1000);
+      try {
+        // Stop previous audio if playing
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+
+        const audio = new Audio(`/sounds/${lastPlayedSound.fileName}`);
+        audio.volume = volume;
+        audioRef.current = audio;
+
+        setIsPlaying(true);
+        await audio.play();
+
+        audio.onended = () => setIsPlaying(false);
+        audio.onerror = () => setIsPlaying(false);
+      } catch (error) {
+        console.warn('Sound replay failed:', error);
+        setIsPlaying(false);
+      }
     }
-  }, [soundEnabled, lastPlayedSound]);
+  }, [soundEnabled, lastPlayedSound, volume]);
 
   const getSoundEffects = useCallback((mode: SoundMode) => {
     const soundEffects = createSoundEffects();

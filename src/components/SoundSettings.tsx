@@ -66,7 +66,7 @@ const SoundSettings = () => {
           <div className="text-center">
             <p className="text-xs text-purple-600 flex items-center justify-center gap-1">
               <Sparkles className="h-3 w-3" />
-              Each mode has unique sounds!
+              Upload your sounds to /public/sounds/
               <Sparkles className="h-3 w-3" />
             </p>
           </div>
@@ -77,8 +77,8 @@ const SoundSettings = () => {
       <div className="px-4">
         <p className="text-xs text-gray-500 text-center">
           {soundEnabled 
-            ? '🎵 Synthetic sounds will auto-play when decisions are revealed!'
-            : '🔇 Enable sounds for extra meme energy!'
+            ? '🎵 Upload MP3 files to public/sounds/ folder to hear them!'
+            : '🔇 Enable sounds for meme audio effects!'
           }
         </p>
       </div>
