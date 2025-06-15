@@ -1,12 +1,16 @@
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import HowItWorksModal from './HowItWorksModal';
 
 interface HeroProps {
   onStartDeciding: () => void;
 }
 
 const Hero = ({ onStartDeciding }: HeroProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
       <div className="max-w-4xl mx-auto text-center">
@@ -57,6 +61,7 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
               Start Deciding ✨
             </Button>
             <Button 
+              onClick={() => setIsModalOpen(true)}
               variant="outline" 
               size="lg" 
               className="border-2 border-purple-300 text-purple-600 font-semibold py-4 px-8 text-lg hover:bg-purple-50 transition-all duration-300"
@@ -66,6 +71,12 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <HowItWorksModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 };

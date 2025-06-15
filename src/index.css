@@ -106,6 +106,10 @@
     animation: bounce 2s infinite;
   }
 
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
   .gradient-primary {
     background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
   }
@@ -126,6 +130,17 @@
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
