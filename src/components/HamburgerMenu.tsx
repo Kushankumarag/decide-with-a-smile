@@ -7,7 +7,8 @@ import {
   DrawerTitle,
   DrawerClose,
 } from '@/components/ui/drawer';
-import { Menu, X, Brain, Shuffle, Sparkles, BookOpen, Users, Volume2, VolumeX } from 'lucide-react';
+import { Menu, X, Brain, Shuffle, Sparkles, BookOpen, Users } from 'lucide-react';
+import SoundSettings from './SoundSettings';
 
 interface HamburgerMenuProps {
   onFeatureSelect: (feature: string) => void;
@@ -15,7 +16,6 @@ interface HamburgerMenuProps {
 
 const HamburgerMenu = ({ onFeatureSelect }: HamburgerMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
 
   const menuItems = [
     {
@@ -59,11 +59,6 @@ const HamburgerMenu = ({ onFeatureSelect }: HamburgerMenuProps) => {
   const handleItemClick = (itemId: string) => {
     onFeatureSelect(itemId);
     setIsOpen(false);
-  };
-
-  const toggleSound = () => {
-    setSoundEnabled(!soundEnabled);
-    // You can add actual sound toggle logic here later
   };
 
   return (
@@ -122,29 +117,8 @@ const HamburgerMenu = ({ onFeatureSelect }: HamburgerMenuProps) => {
               );
             })}
 
-            {/* Sound Toggle */}
-            <div className="border-t pt-4 mt-6">
-              <Button
-                variant="outline"
-                className="w-full p-4 h-auto text-left justify-start"
-                onClick={toggleSound}
-              >
-                <div className="flex items-center gap-4 w-full">
-                  <div className="text-2xl">🎧</div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base">Toggle Meme Sounds</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {soundEnabled ? 'Sounds are ON' : 'Sounds are OFF'}
-                    </p>
-                  </div>
-                  {soundEnabled ? (
-                    <Volume2 className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <VolumeX className="h-5 w-5 text-gray-400" />
-                  )}
-                </div>
-              </Button>
-            </div>
+            {/* Replace the old sound toggle with the new SoundSettings component */}
+            <SoundSettings />
 
             {/* Fun Footer */}
             <div className="text-center pt-4 border-t">

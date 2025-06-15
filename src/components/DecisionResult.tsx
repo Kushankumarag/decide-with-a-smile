@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import confetti from 'canvas-confetti';
 import { Mood } from '../types';
+import SoundEffectPlayer from './SoundEffectPlayer';
+import { SoundMode } from '../hooks/useSoundEffects';
 
 interface DecisionResultProps {
   mode: string;
@@ -22,19 +24,43 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
   const [memeReaction, setMemeReaction] = useState<string>('');
   const [isRevealing, setIsRevealing] = useState(true);
   const [explanation, setExplanation] = useState<string>('');
+  const [soundTriggered, setSoundTriggered] = useState(false);
+
+  // Map decision modes to sound modes
+  const getSoundMode = (): SoundMode => {
+    switch (mode) {
+      case 'random': return 'random';
+      case 'ai': return 'ai';
+      case 'logic': return 'logic';
+      case 'sassy': return 'sassy';
+      case 'reverse': return 'reverse';
+      case 'party': return 'party';
+      default: return 'random';
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       generateDecision();
       setIsRevealing(false);
       
-      // Trigger confetti
-      confetti({
+      // Trigger confetti with enhanced effects for sound modes
+      const confettiOptions = {
         particleCount: chaosMode ? 200 : 100,
         spread: chaosMode ? 100 : 70,
         origin: { y: 0.6 },
         colors: chaosMode ? ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'] : undefined
-      });
+      };
+      
+      // Add screen shake effect for dramatic modes
+      if (['party', 'sassy', 'random'].includes(mode)) {
+        document.body.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+          document.body.style.animation = '';
+        }, 500);
+      }
+      
+      confetti(confettiOptions);
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -263,6 +289,18 @@ const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOv
             <p className="text-base md:text-xl text-gray-700 mb-3 md:mb-4 font-medium px-2">
               {message}
             </p>
+            
+            {/* Sound Effect Player - NEW */}
+            <div className="mb-4">
+              <SoundEffectPlayer 
+                mode={getSoundMode()} 
+                autoPlay={true}
+                onSoundPlayed={(soundName) => {
+                  console.log(`Played sound: ${soundName} for mode: ${mode}`);
+                }}
+              />
+            </div>
+
             <div className="text-lg md:text-2xl mb-4 md:mb-6 p-3 md:p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-dashed border-orange-300">
               {memeReaction}
             </div>
