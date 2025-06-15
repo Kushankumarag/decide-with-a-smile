@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,9 +9,10 @@ interface DecisionResultProps {
   context: string;
   onDecideAgain: () => void;
   onStartOver: () => void;
+  onChangeMode: () => void;
 }
 
-const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver }: DecisionResultProps) => {
+const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, onChangeMode }: DecisionResultProps) => {
   const [result, setResult] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [isRevealing, setIsRevealing] = useState(true);
@@ -141,6 +141,13 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver }: 
                   className="gradient-primary text-white font-semibold py-3 px-6 hover:shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   🔄 Decide Again
+                </Button>
+                <Button
+                  onClick={onChangeMode}
+                  variant="outline"
+                  className="border-2 border-orange-300 text-orange-600 font-semibold py-3 px-6 hover:bg-orange-50 transition-all duration-300"
+                >
+                  🎯 Try Different Mode
                 </Button>
                 <Button
                   onClick={onStartOver}

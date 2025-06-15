@@ -29,6 +29,10 @@ const Index = () => {
     setDecisionKey(prev => prev + 1);
   };
 
+  const handleChangeMode = () => {
+    setCurrentState('input');
+  };
+
   const handleStartOver = () => {
     setDecisionData({ mode: '', options: [], context: '' });
     setDecisionKey(0);
@@ -43,7 +47,14 @@ const Index = () => {
     case 'hero':
       return <Hero onStartDeciding={handleStartDeciding} />;
     case 'input':
-      return <DecisionInput onModeSelect={handleModeSelect} onBack={handleBack} />;
+      return (
+        <DecisionInput 
+          onModeSelect={handleModeSelect} 
+          onBack={handleBack}
+          initialOptions={decisionData.options.length > 0 ? decisionData.options : undefined}
+          initialContext={decisionData.context}
+        />
+      );
     case 'result':
       return (
         <DecisionResult
@@ -53,6 +64,7 @@ const Index = () => {
           context={decisionData.context}
           onDecideAgain={handleDecideAgain}
           onStartOver={handleStartOver}
+          onChangeMode={handleChangeMode}
         />
       );
     default:

@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,11 +8,22 @@ import { Trash2, Plus } from 'lucide-react';
 interface DecisionInputProps {
   onModeSelect: (mode: string, options: string[], context: string) => void;
   onBack: () => void;
+  initialOptions?: string[];
+  initialContext?: string;
 }
 
-const DecisionInput = ({ onModeSelect, onBack }: DecisionInputProps) => {
-  const [options, setOptions] = useState(['', '']);
-  const [context, setContext] = useState('');
+const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext }: DecisionInputProps) => {
+  const [options, setOptions] = useState(initialOptions || ['', '']);
+  const [context, setContext] = useState(initialContext || '');
+
+  useEffect(() => {
+    if (initialOptions && initialOptions.length > 0) {
+      setOptions(initialOptions);
+    }
+    if (initialContext) {
+      setContext(initialContext);
+    }
+  }, [initialOptions, initialContext]);
 
   const addOption = () => {
     if (options.length < 6) {
