@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,9 +5,11 @@ import HowItWorksModal from './HowItWorksModal';
 
 interface HeroProps {
   onStartDeciding: () => void;
+  onViewHistory: () => void;
+  chaosMode?: boolean;
 }
 
-const Hero = ({ onStartDeciding }: HeroProps) => {
+const Hero = ({ onStartDeciding, onViewHistory, chaosMode }: HeroProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fun floating memes that appear randomly
@@ -20,8 +21,12 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
     { emoji: '🎲', position: 'bottom-60 right-4 md:right-10' }
   ]);
 
+  const bgClass = chaosMode 
+    ? "min-h-screen bg-gradient-to-br from-red-100 via-yellow-100 to-pink-100 animate-pulse" 
+    : "min-h-screen bg-gradient-to-br from-purple-50 to-pink-50";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className={`${bgClass} flex items-center justify-center p-4 relative overflow-hidden`}>
       <div className="max-w-4xl mx-auto text-center w-full">
         {/* Floating emoji decorations with meme energy - hidden on very small screens */}
         {currentMemes.map((meme, index) => (
@@ -42,6 +47,14 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
 
         {/* Main content */}
         <div className="relative z-10">
+          {chaosMode && (
+            <div className="mb-4 p-3 md:p-4 bg-gradient-to-r from-red-200 to-orange-200 rounded-lg border-2 border-dashed border-red-400 max-w-sm md:max-w-md mx-auto animate-wiggle">
+              <p className="text-sm md:text-lg font-bold text-red-800">
+                🌪️ CHAOS MODE ACTIVATED! Reality.exe has stopped working! 🌪️
+              </p>
+            </div>
+          )}
+
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 md:mb-6 px-2">
             Can't Decide?
           </h1>
@@ -97,6 +110,14 @@ const Hero = ({ onStartDeciding }: HeroProps) => {
               className="border-2 border-purple-300 text-purple-600 font-semibold py-3 md:py-4 px-6 md:px-8 text-base md:text-lg hover:bg-purple-50 transition-all duration-300 w-full sm:w-auto"
             >
               How It Works 🔍
+            </Button>
+            <Button 
+              onClick={onViewHistory}
+              variant="outline" 
+              size="lg" 
+              className="border-2 border-orange-300 text-orange-600 font-semibold py-3 md:py-4 px-6 md:px-8 text-base md:text-lg hover:bg-orange-50 transition-all duration-300 w-full sm:w-auto"
+            >
+              My Decisions 🕰️
             </Button>
           </div>
           

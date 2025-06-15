@@ -1,23 +1,27 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import confetti from 'canvas-confetti';
+import { Mood } from '../types';
 
 interface DecisionResultProps {
   mode: string;
   options: string[];
   context: string;
+  mood?: Mood;
   onDecideAgain: () => void;
   onStartOver: () => void;
   onChangeMode: () => void;
+  onDecisionComplete: (selectedOption: string) => void;
+  chaosMode?: boolean;
 }
 
-const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, onChangeMode }: DecisionResultProps) => {
+const DecisionResult = ({ mode, options, context, mood, onDecideAgain, onStartOver, onChangeMode, onDecisionComplete, chaosMode }: DecisionResultProps) => {
   const [result, setResult] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [memeReaction, setMemeReaction] = useState<string>('');
   const [isRevealing, setIsRevealing] = useState(true);
+  const [explanation, setExplanation] = useState<string>('');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -26,19 +30,41 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
       
       // Trigger confetti
       confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
+        particleCount: chaosMode ? 200 : 100,
+        spread: chaosMode ? 100 : 70,
+        origin: { y: 0.6 },
+        colors: chaosMode ? ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'] : undefined
       });
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [mode, options]);
+  }, [mode, options, chaosMode]);
 
   const generateDecision = () => {
     let selectedOption: string;
     let decisionMessage: string;
     let meme: string;
+    let aiExplanation: string = '';
+
+    // Mood-influenced decision messages
+    const getMoodInfluencedMessages = (baseMood: string) => {
+      if (!mood) return baseMood;
+      
+      switch (mood) {
+        case 'chaotic':
+          return baseMood + " Chaos theory approves! 🌪️";
+        case 'chill':
+          return "Taking it easy with this choice... " + baseMood + " 😌";
+        case 'productivity':
+          return "Time to get stuff done! " + baseMood + " 💪";
+        case 'sassy':
+          return baseMood + " Period! 💅";
+        case 'logical':
+          return "Logic has computed: " + baseMood + " 🤓";
+        default:
+          return baseMood;
+      }
+    };
 
     const memeReactions = [
       "This is the way! 🤌",
@@ -63,7 +89,7 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
           "Chaos chose chaos... and this! 🌪️",
           "The dice said 'yeet' and landed on this! 🎯"
         ];
-        decisionMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+        decisionMessage = getMoodInfluencedMessages(randomMessages[Math.floor(Math.random() * randomMessages.length)]);
         break;
         
       case 'ai':
@@ -75,7 +101,17 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
           "My AI brain says: 'This one sparks joy!' 🎯",
           "Processing... Processing... EUREKA! This is it! 💡"
         ];
-        decisionMessage = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+        decisionMessage = getMoodInfluencedMessages(aiMessages[Math.floor(Math.random() * aiMessages.length)]);
+        
+        // Generate AI explanation
+        const explanations = [
+          "Based on a 0.0001% increase in serotonin levels when you read this option.",
+          "My algorithms detected superior vibes emanating from this choice.",
+          "After consulting the universal probability matrix, this scored highest.",
+          "Neural pathway analysis suggests this option will cause 23% more happiness.",
+          "Quantum mechanics and pure luck both pointed to this one."
+        ];
+        aiExplanation = explanations[Math.floor(Math.random() * explanations.length)];
         break;
         
       case 'logic':
@@ -87,7 +123,7 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
           "Math is mathing perfectly here! ➕➖",
           "My spreadsheet is crying tears of joy! 📈😭"
         ];
-        decisionMessage = logicMessages[Math.floor(Math.random() * logicMessages.length)];
+        decisionMessage = getMoodInfluencedMessages(logicMessages[Math.floor(Math.random() * logicMessages.length)]);
         break;
         
       case 'sassy':
@@ -99,7 +135,7 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
           "Main character energy is choosing this! 🌟",
           "Sorry not sorry, but this is THE choice! 💋"
         ];
-        decisionMessage = sassyMessages[Math.floor(Math.random() * sassyMessages.length)];
+        decisionMessage = getMoodInfluencedMessages(sassyMessages[Math.floor(Math.random() * sassyMessages.length)]);
         break;
         
       default:
@@ -111,6 +147,10 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
     setResult(selectedOption);
     setMessage(decisionMessage);
     setMemeReaction(meme);
+    setExplanation(aiExplanation);
+    
+    // Notify parent component
+    onDecisionComplete(selectedOption);
   };
 
   const getModeEmoji = () => {
@@ -132,6 +172,10 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
       default: return 'Decision';
     }
   };
+
+  const bgClass = chaosMode 
+    ? "min-h-screen bg-gradient-to-br from-red-100 via-yellow-100 to-pink-100" 
+    : "min-h-screen bg-gradient-to-br from-purple-50 to-pink-50";
 
   if (isRevealing) {
     const loadingMemes = [
@@ -160,8 +204,16 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+    <div className={`${bgClass} p-4`}>
       <div className="max-w-2xl mx-auto pt-4 md:pt-8">
+        {chaosMode && (
+          <div className="mb-4 p-3 bg-gradient-to-r from-red-200 to-orange-200 rounded-lg border-2 border-dashed border-red-400 animate-wiggle">
+            <p className="text-center font-bold text-red-800">
+              🌪️ CHAOS MODE RESULT! 🌪️
+            </p>
+          </div>
+        )}
+
         <div className="text-center mb-6 md:mb-8">
           <div className="text-4xl md:text-6xl mb-3 md:mb-4 animate-bounce-slow">{getModeEmoji()}</div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
@@ -184,6 +236,13 @@ const DecisionResult = ({ mode, options, context, onDecideAgain, onStartOver, on
             <div className="text-lg md:text-2xl mb-4 md:mb-6 p-3 md:p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-dashed border-orange-300">
               {memeReaction}
             </div>
+
+            {explanation && (
+              <div className="mt-4 p-3 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg border-2 border-dashed border-blue-300">
+                <h4 className="font-semibold text-blue-800 mb-2">🤖 AI Explanation:</h4>
+                <p className="text-sm text-blue-700">{explanation}</p>
+              </div>
+            )}
 
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">

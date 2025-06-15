@@ -1,21 +1,26 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Trash2, Plus } from 'lucide-react';
+import MoodSelector from './MoodSelector';
+import { Mood } from '../types';
 
 interface DecisionInputProps {
-  onModeSelect: (mode: string, options: string[], context: string) => void;
+  onModeSelect: (mode: string, options: string[], context: string, mood?: Mood) => void;
   onBack: () => void;
   initialOptions?: string[];
   initialContext?: string;
+  initialMood?: Mood;
+  chaosMode?: boolean;
 }
 
-const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext }: DecisionInputProps) => {
+const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext, initialMood, chaosMode }: DecisionInputProps) => {
   const [options, setOptions] = useState(initialOptions || ['', '']);
   const [context, setContext] = useState(initialContext || '');
+  const [selectedMood, setSelectedMood] = useState<Mood | undefined>(initialMood);
+  const [showMoodSelector, setShowMoodSelector] = useState(true);
 
   useEffect(() => {
     if (initialOptions && initialOptions.length > 0) {
@@ -47,15 +52,25 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext }:
   const handleModeSelect = (mode: string) => {
     const validOptions = options.filter(option => option.trim() !== '');
     if (validOptions.length >= 2) {
-      onModeSelect(mode, validOptions, context);
+      // Chaos mode effect - shuffle options randomly
+      if (chaosMode) {
+        const shuffled = [...validOptions].sort(() => Math.random() - 0.5);
+        onModeSelect(mode, shuffled, context, selectedMood);
+      } else {
+        onModeSelect(mode, validOptions, context, selectedMood);
+      }
     }
   };
+
+  const bgClass = chaosMode 
+    ? "min-h-screen bg-gradient-to-br from-red-100 via-yellow-100 to-pink-100" 
+    : "min-h-screen bg-gradient-to-br from-purple-50 to-pink-50";
 
   const validOptions = options.filter(option => option.trim() !== '');
   const canProceed = validOptions.length >= 2;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+    <div className={`${bgClass} p-4`}>
       <div className="max-w-2xl mx-auto pt-4 md:pt-8">
         <Button 
           onClick={onBack}
@@ -64,6 +79,22 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext }:
         >
           ← Back to Home
         </Button>
+
+        {chaosMode && (
+          <div className="mb-4 p-3 bg-gradient-to-r from-red-200 to-orange-200 rounded-lg border-2 border-dashed border-red-400 animate-wiggle">
+            <p className="text-center font-bold text-red-800">
+              🌪️ CHAOS MODE: Your options might get shuffled! 🌪️
+            </p>
+          </div>
+        )}
+
+        {showMoodSelector && (
+          <MoodSelector
+            selectedMood={selectedMood}
+            onMoodSelect={setSelectedMood}
+            onSkip={() => setShowMoodSelector(false)}
+          />
+        )}
 
         <Card className="p-4 md:p-8 shadow-xl">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -133,6 +164,14 @@ const DecisionInput = ({ onModeSelect, onBack, initialOptions, initialContext }:
             <h3 className="text-base md:text-lg font-semibold text-center mb-3 md:mb-4">
               Choose Your Decision Mode 🎯
             </h3>
+            
+            {selectedMood && (
+              <div className="text-center mb-4 p-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg">
+                <span className="text-sm font-medium text-purple-700">
+                  Current vibe: <span className="capitalize">{selectedMood}</span> ✨
+                </span>
+              </div>
+            )}
             
             <div className="grid grid-cols-2 gap-3 md:gap-4">
               <Button
