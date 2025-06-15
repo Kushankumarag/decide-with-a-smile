@@ -3,9 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
-import { useHuggingFaceApiKey } from "../hooks/useHuggingFaceApiKey";
-import { fetchDeepSeekRoast } from "../utils/fetchDeepSeekRoast";
 import { useRef } from "react";
+import { browserRoast } from "../utils/browserRoastModel";
 
 const sampleRoasts = [
   "Wow, that’s a new level of questionable decision-making. Did you consult a goldfish or just your vibes?",
@@ -27,9 +26,6 @@ export default function RoastMyDay() {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { apiKey, setApiKey } = useHuggingFaceApiKey();
-  const apiInputRef = useRef<HTMLInputElement>(null);
-
   const handleGetRoast = async () => {
     setApiError(null);
     if (input.trim().length === 0) {
@@ -37,77 +33,19 @@ export default function RoastMyDay() {
       setRoast(null);
       return;
     }
-    if (!apiKey) {
-      setApiError("Please enter your Hugging Face API key to generate a roast.");
-      return;
-    }
     setLoading(true);
     try {
-      const systemPrompt = `You're an internet comedian roasting people for fun. Craft a clever, light-hearted roast for: "${input}". Keep it under 3 sentences.`;
-      const roastText = await fetchDeepSeekRoast({ prompt: systemPrompt, apiKey });
+      const roastText = await browserRoast(input);
       setRoast(`${roastText} [About: ${input}]`);
       setShowInputError(false);
     } catch (err: any) {
       setApiError(
-        err.message?.includes("401")
-          ? "Invalid or expired Hugging Face API key."
-          : `Failed to generate roast: ${err.message}`
+        `Failed to generate roast locally: ${err.message ?? err.toString()}`
       );
       setRoast(null);
     }
     setLoading(false);
   };
-
-  // UI for setting Hugging Face API key
-  const renderApiKeyInput = () => (
-    <div className="bg-yellow-50 border border-yellow-300 p-4 rounded mb-4 text-left shadow flex flex-col items-start">
-      <label className="font-semibold text-yellow-700 mb-1" htmlFor="hf-api-key">
-        Enter your Hugging Face API Key:
-      </label>
-      <div className="w-full flex gap-2">
-        <input
-          id="hf-api-key"
-          ref={apiInputRef}
-          className="border rounded px-2 py-1 flex-1"
-          type="password"
-          autoComplete="off"
-          placeholder="hf_..."
-          defaultValue={apiKey ?? ""}
-          style={{ minWidth: 0 }}
-        />
-        <Button
-          type="button"
-          onClick={() => {
-            const value = apiInputRef.current?.value.trim();
-            if (value) {
-              setApiKey(value);
-            }
-          }}
-          size="sm"
-        >
-          Save
-        </Button>
-        {apiKey && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setApiKey(null)}
-            size="sm"
-            className="text-red-700 border-red-300"
-          >
-            Clear
-          </Button>
-        )}
-      </div>
-      <span className="text-xs text-yellow-700 mt-2">
-        Get your key at{" "}
-        <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="underline">
-          huggingface.co/settings/tokens
-        </a>{" "}
-        (requires a free account).
-      </span>
-    </div>
-  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-yellow-50 via-pink-50 to-rose-50 p-4">
@@ -118,7 +56,6 @@ export default function RoastMyDay() {
         <p className="text-md text-gray-600 mb-4">
           Enter something you did, a decision you made, or just how your day’s going.
         </p>
-        {renderApiKeyInput()}
         <Textarea 
           value={input}
           placeholder="e.g., Ate cereal with water, or spent 2 hours watching cat videos"
